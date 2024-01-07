@@ -13,3 +13,24 @@ Linux:
 ```
 python3 nahcrofDB.py createDB
 ```
+
+# Using nahcrofDB
+using nahcrofDB is quite simple and currently only has 2 functions
+
+## creating a key
+here is an example of how to create a key with nahcrofDB
+```
+nahcrofDB.makeKey("keyname", "example key data")
+```
+your key data can contain any types at all and unless stored incorrectly should not return an error
+
+## getting a key
+here is an example of how to get a key with nahcrofDB
+```
+nahcrofDB.getKey("keyname")
+```
+RETURNS:
+```
+example key data
+```
+if the key requested does not exist the database will simply return "key not found"
