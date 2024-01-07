@@ -2,7 +2,6 @@ import sys
 import os, shutil
 import pickle
 import requests
-utf = "utf-8"
 
 def makeKey(keyname, keycontent):
     db = pickle.load(open("main.db", "rb"))
@@ -25,12 +24,11 @@ if __name__ == '__main__':
     args = sys.argv[1:]
     if args:
         if args[0] == "help":
-            print("Co4mands:")
+            print("Commands:")
             print("createDB - creates a database to load data from")
             print("")
             print("this is currently the only command that exists, more commands will come in the future :)")
     if args[0] == "createDB":
         createDB()
-
 
 
