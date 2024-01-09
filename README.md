@@ -1,33 +1,33 @@
 # Introduction 
-nahcrofDB is a key-value database designed to be extremely simple to get running and to use. Please note that at this current time there is no way to host the database, this simply interacts with an existing file
+nahcrofDB is a simple python key-value database designed to make creating and using a database as simple as possible. This GitHub page does not contain instructions on how to setup a database with the website and api but you can find that at [database.nahcrof.com/docs](https://database.nahcrof.com/docs)
 
 ## setup
-to setup nahcrofDB you will need to install the "nahcrofDB.py" file. Once this file is installed make sure it is in the same directory as your project. Finally you will need to run the following command to create your database. 
+to setup a local database you will need to install the "localDB.py" file. Once this file is installed make sure it is in the same directory as your project. Finally you will need to run the following command to create your database. 
 
 Windows:
 ```
-nahcrofDB.py createDB
+localDB.py createDB
 ```
 
 Linux:
 ```
-python3 nahcrofDB.py createDB
+python3 localDB.py createDB
 ```
 
 # Using nahcrofDB
-using nahcrofDB is quite simple and currently only has 2 functions
+using a localDB is quite simple and currently only has 2 functions
 
 ## creating a key
-here is an example of how to create a key with nahcrofDB
+here is an example of how to create a key with the localDB 
 ```
-nahcrofDB.makeKey("keyname", "example key data")
+localDB.makeKey("keyname", "example key data")
 ```
 your key data can contain any types at all and unless stored incorrectly should not return an error
 
 ## getting a key
-here is an example of how to get a key with nahcrofDB
+here is an example of how to get a key with a localDB 
 ```
-nahcrofDB.getKey("keyname")
+localDB.getKey("keyname")
 ```
 RETURNS:
 ```
