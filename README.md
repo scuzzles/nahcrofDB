@@ -14,7 +14,7 @@ Linux:
 python3 localDB.py createDB
 ```
 
-# Using nahcrofDB
+# Using localDB 
 using a localDB is quite simple and currently only has 2 functions
 
 ## creating a key
