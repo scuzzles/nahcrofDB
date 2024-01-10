@@ -31,6 +31,28 @@ def makeKey(keyname, keycontent):
         r1 = requests.post('https://database.nahcrof.com/makeKey', json=payload)
         return r1
 
+# returns all existing keys in defined database
+def getAll():
+    if token[0] == 0:
+        return "token parameter not set"
+    elif username[0] == 0:
+        return "username/location parameter not set"
+    else:
+        r = requests.get(url=f"https://database.nahcrof.com/getAll/['{username[0]}', '{token[0]}']")
+        data = r.json()
+        return data
+
+def delKey(keyname):
+    if token[0] == 0:
+        print("token parameter not set")
+    elif username[0] == 0:
+        print("username/location parameter not set")
+    else:
+        payload = {"location": username[0], "keyname": keyname, "token": token[0]}
+        r1 = requests.post('https://database.nahcrof.com/delKey', json=payload)
+        return r1
+    
+
 # this will reset the defined database to have 0 keys, no backup will be made, DO NOT use this unless you know what you are doing
 def resetDB():
     if token[0] == 0:
