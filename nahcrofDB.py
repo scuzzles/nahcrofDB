@@ -16,7 +16,7 @@ def getKey(keyname):
     elif username[0] == 0:
         return "username/location parameter not set"
     else:
-        r = requests.get(url=f"https://database.nahcrof.com/getKey/['{username[0]}', '{keyname}', '{token[0]}']")
+        r = requests.get(url=f"https://database.nahcrof.com/getKey/?location={username[0]}&keyname={keyname}&token={token[0]}")
         data = r.json()
         return data["keycontent"]
 
@@ -38,7 +38,7 @@ def getAll():
     elif username[0] == 0:
         return "username/location parameter not set"
     else:
-        r = requests.get(url=f"https://database.nahcrof.com/getAll/['{username[0]}', '{token[0]}']")
+        r = requests.get(url=f"https://database.nahcrof.com/getAll/?location={username[0]}&token={token[0]}")
         data = r.json()
         return data
 
