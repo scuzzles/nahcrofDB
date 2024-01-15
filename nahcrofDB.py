@@ -5,12 +5,12 @@ token = [0]
 username = [0]
 
 # stores token and username to simplify database access
-def init(api_token, location):
+def init(api_token: str, location: str):
     token[0] = api_token
     username[0] = location
 
 # returns a key from the defined database
-def getKey(keyname):
+def getKey(keyname: str):
     if token[0] == 0:
         return "token parameter not set"
     elif username[0] == 0:
@@ -21,7 +21,7 @@ def getKey(keyname):
         return data["keycontent"]
 
 # creates a key in the defined database
-def makeKey(keyname, keycontent):
+def makeKey(keyname: str, keycontent):
     if token[0] == 0:
         print("token parameter not set")
     elif username[0] == 0:
@@ -42,7 +42,7 @@ def getAll():
         data = r.json()
         return data
 
-def delKey(keyname):
+def delKey(keyname: str):
     if token[0] == 0:
         print("token parameter not set")
     elif username[0] == 0:
