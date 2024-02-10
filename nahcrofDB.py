@@ -20,6 +20,7 @@ def getKey(keyname: str):
         data = r.json()
         return data["keycontent"]
 
+# returns multiple requested keys
 def getKeys(*keynames):
     templist = []
     for keyname in keynames:
