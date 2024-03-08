@@ -46,6 +46,6 @@ nahcrofDB.getAll()
 
 ### Deleting Keys
 to delete a key from your database you will use the "delKey" function.
-```
+```python
 nahcrofDB.delKey("keyname")
 ```
