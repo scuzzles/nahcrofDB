@@ -1,5 +1,6 @@
 import requests
 import json
+from urllib.parse import quote
 import os
 token = [0]
 username = [0]
@@ -16,7 +17,7 @@ def getKey(keyname: str):
     elif username[0] == 0:
         return "username/location parameter not set"
     else:
-        r = requests.get(url=f"https://database.nahcrof.com/getKey/?location={username[0]}&keyname={keyname}&token={token[0]}")
+        r = requests.get(url=f"https://database.nahcrof.com/getKey/?location={quote(username[0])}&keyname={quote(keyname)}&token={quote(token[0])}")
         data = r.json()
         return data["keycontent"]
 
@@ -25,11 +26,11 @@ def getKeys(*keynames):
     templist = []
     for keyname in keynames:
         listnum = len(templist)
-        keydata = f"&key_{listnum}={keyname}"
+        keydata = f"&key_{listnum}={quote(keyname)}"
         templist.append(keydata)
     keynamenum = len(keynames)
     result = "".join(templist)
-    r = requests.get(url=f"https://database.nahcrof.com/getKeys/?location={username[0]}&token={token[0]}&keynamenum={keynamenum}" + result)
+    r = requests.get(url=f"https://database.nahcrof.com/getKeys/?location={quote(username[0])}&token={quote(token[0])}&keynamenum={quote(keynamenum)}" + result)
     data = r.json()
     return data
 
@@ -51,7 +52,7 @@ def getAll():
     elif username[0] == 0:
         return "username/location parameter not set"
     else:
-        r = requests.get(url=f"https://database.nahcrof.com/getAll/?location={username[0]}&token={token[0]}")
+        r = requests.get(url=f"https://database.nahcrof.com/getAll/?location={quote(username[0])}&token={quote(token[0])}")
         data = r.json()
         return data
 
