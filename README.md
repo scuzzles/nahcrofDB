@@ -1,9 +1,9 @@
 # Introduction 
 nahcrofDB is a simple python key-value database designed to make creating and using a database as simple as possible. This GitHub page does not contain instructions on how to setup a database with the website or using languages other than python but you can find that at [database.nahcrof.com/docs](https://database.nahcrof.com/docs)
 # Basic Docs
-To begin using nahcrofDB, ensure you have the nahcrofDB.py module installed from this GitHub page, then be sure to install requests with the following command.
+To begin using nahcrofDB, if you are using python then you will need to run the following command:
 ```
-pip install requests
+pip install nahcrofDB requests
 ```
 ## setting up your project
 to add and test your database to project, you will need to paste the following.
@@ -36,12 +36,6 @@ This would return the values of key1, key2, and key3 in a dict. To get key2 out 
 ```python
 example = nahcrofDB.getKeys("key1", "key2", "key3")
 print(example["key2"])
-```
-
-### Get All:
-if you want to get all keys in your database, you can use the "getAll" function, here is an example of how to use it.
-```python
-nahcrofDB.getAll()
 ```
 
 ### Deleting Keys

@@ -52,9 +52,7 @@ def getAll():
     elif username[0] == 0:
         return "username/location parameter not set"
     else:
-        r = requests.get(url=f"https://database.nahcrof.com/getAll/?location={quote(username[0])}&token={quote(token[0])}")
-        data = r.json()
-        return data
+        return "getAll function has been deprecated" 
 
 def delKey(keyname: str):
     if token[0] == 0:
@@ -67,8 +65,7 @@ def delKey(keyname: str):
         return r1
 
 
-# this will reset the defined database to have 0 keys, no backup will be made, DO NOT use this unless you know what you are doing
-def resetDB():
+# this will reset the defined database to have 0 keys, no backup will be made, DO NOT use this unless you know what you are doing def resetDB():
     if token[0] == 0:
         print("token parameter not set")
     elif username[0] == 0:

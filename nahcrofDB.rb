@@ -47,7 +47,7 @@ module NahcrofDB
         res = Net::HTTP.get_response(uri)
         json_string = res.body if res.is_a?(Net::HTTPSuccess)
         parsed_json = JSON.parse(json_string)
-        return parsed_json
+        return "get all function has been deprecated" 
     end
 
     def self.delKey(keyname)
