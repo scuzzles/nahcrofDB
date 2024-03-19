@@ -21,6 +21,17 @@ def getKey(keyname: str):
         data = r.json()
         return data["keycontent"]
 
+# returns all keys containing the specified data 
+def search(data: str):
+    if token[0] == 0:
+        return "token parameter not set"
+    elif username[0] == 0:
+        return "username/location parameter not set"
+    else:
+        r = requests.get(url=f"https://database.nahcrof.com/search/?location={quote(username[0])}&parameter={quote(data)}&token={quote(token[0])}")
+        response = r.json()
+        return response["data"]
+
 # returns multiple requested keys
 def getKeys(*keynames):
     templist = []

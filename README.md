@@ -38,7 +38,18 @@ example = nahcrofDB.getKeys("key1", "key2", "key3")
 print(example["key2"])
 ```
 
-### Deleting Keys
+### Search:
+when storing data it can sometimes be useful to search through that data for specific keywords or patterns, to do this in nahcrofDB you use the search function.
+```python
+results = nahcrofDB.search("hi")
+print(results)
+```
+The output of this code will look something like this (Note, the result will vary depending on the data in your database)
+``` 
+["key1", "otherkey", "importantKey"]
+```
+
+### Deleting Keys: 
 to delete a key from your database you will use the "delKey" function.
 ```python
 nahcrofDB.delKey("keyname")
