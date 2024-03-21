@@ -39,7 +39,7 @@ def getKeys(*keynames):
         listnum = len(templist)
         keydata = f"&key_{listnum}={quote(keyname)}"
         templist.append(keydata)
-    keynamenum = len(keynames)
+    keynamenum = str(len(keynames)) 
     result = "".join(templist)
     r = requests.get(url=f"https://database.nahcrof.com/getKeys/?location={quote(username[0])}&token={quote(token[0])}&keynamenum={quote(keynamenum)}" + result)
     data = r.json()
