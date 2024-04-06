@@ -45,6 +45,19 @@ def getKeys(*keynames):
     data = r.json()
     return data
 
+# returns multiple requested keys with a list input value 
+def getKeysList(keynames: list):
+    templist = []
+    for keyname in keynames:
+        listnum = len(templist)
+        keydata = f"&key_{listnum}={quote(keyname)}"
+        templist.append(keydata)
+    keynamenum = str(len(keynames))
+    result = "".join(templist)
+    r = requests.get(url=f"https://database.nahcrof.com/getKeys/?location={quote(username[0])}&token={quote(token[0])}&keynamenum={quote(keynamenum)}" + result)
+    data = r.json()
+    return data
+
 # creates a key in the defined database
 def makeKey(keyname: str, keycontent):
     if token[0] == 0:
@@ -77,6 +90,7 @@ def delKey(keyname: str):
 
 
 # this will reset the defined database to have 0 keys, no backup will be made, DO NOT use this unless you know what you are doing def resetDB():
+def resetDB():
     if token[0] == 0:
         print("token parameter not set")
     elif username[0] == 0:
