@@ -2,100 +2,48 @@ import requests
 import json
 from urllib.parse import quote
 import os
-token = [0]
-username = [0]
+usertoken = ["0"]
+myurl = "https://database.nahcrof.com"
 
-# stores token and username to simplify database access
-def init(api_token: str, location: str):
-    token[0] = api_token
-    username[0] = location
+def init(token):
+    usertoken[0] = token
 
-# returns a key from the defined database
-def getKey(keyname: str):
-    if token[0] == 0:
-        return "token parameter not set"
-    elif username[0] == 0:
-        return "username/location parameter not set"
-    else:
-        r = requests.get(url=f"https://database.nahcrof.com/getKey/?location={quote(username[0])}&keyname={quote(keyname)}&token={quote(token[0])}")
-        data = r.json()
-        return data["keycontent"]
+def getKey(key):
+    headers = {'X-API-Key': usertoken[0]}
+    r = requests.get(url=f"{myurl}/v2/key/{quote(key)}", headers=headers).json()
+    try:
+        return r["value"]
+    except KeyError:
+        return r
 
-# returns all keys containing the specified data 
-def search(data: str):
-    if token[0] == 0:
-        return "token parameter not set"
-    elif username[0] == 0:
-        return "username/location parameter not set"
-    else:
-        r = requests.get(url=f"https://database.nahcrof.com/search/?location={quote(username[0])}&parameter={quote(data)}&token={quote(token[0])}")
-        response = r.json()
-        return response["data"]
-
-# returns multiple requested keys
-def getKeys(*keynames):
+def getKeys(*keys):
     templist = []
-    for keyname in keynames:
-        listnum = len(templist)
-        keydata = f"&key_{listnum}={quote(keyname)}"
-        templist.append(keydata)
-    keynamenum = str(len(keynames)) 
+    headers = {'X-API-Key': usertoken[0]}
+    templist.append(f"?key[]={quote(str(keys[0]))}")
+    if len(keys) > 1:
+        for key in keys:
+            if f"?key[]={key}" in templist:
+                pass
+            else:
+                templist.append(f"&key[]={quote(str(key))}")
     result = "".join(templist)
-    r = requests.get(url=f"https://database.nahcrof.com/getKeys/?location={quote(username[0])}&token={quote(token[0])}&keynamenum={quote(keynamenum)}" + result)
-    data = r.json()
-    return data
+    return requests.get(url=f"{myurl}/v2/keys/{result}", headers=headers).json()
 
-# returns multiple requested keys with a list input value 
-def getKeysList(keynames: list):
-    templist = []
-    for keyname in keynames:
-        listnum = len(templist)
-        keydata = f"&key_{listnum}={quote(keyname)}"
-        templist.append(keydata)
-    keynamenum = str(len(keynames))
-    result = "".join(templist)
-    r = requests.get(url=f"https://database.nahcrof.com/getKeys/?location={quote(username[0])}&token={quote(token[0])}&keynamenum={quote(keynamenum)}" + result)
-    data = r.json()
-    return data
-
-# creates a key in the defined database
-def makeKey(keyname: str, keycontent):
-    if token[0] == 0:
-        print("token parameter not set")
-    elif username[0] == 0:
-        print("username/location parameter not set")
-    else:
-        payload = {"location": username[0], "keyname": keyname, "keycontent": keycontent, "token": token[0]}
-        r1 = requests.post('https://database.nahcrof.com/makeKey', json=payload)
-        return r1
-
-# returns all existing keys in defined database
-def getAll():
-    if token[0] == 0:
-        return "token parameter not set"
-    elif username[0] == 0:
-        return "username/location parameter not set"
-    else:
-        return "getAll function has been deprecated" 
-
-def delKey(keyname: str):
-    if token[0] == 0:
-        print("token parameter not set")
-    elif username[0] == 0:
-        print("username/location parameter not set")
-    else:
-        payload = {"location": username[0], "keyname": keyname, "token": token[0]}
-        r1 = requests.post('https://database.nahcrof.com/delKey', json=payload)
-        return r1
-
-
-# this will reset the defined database to have 0 keys, no backup will be made, DO NOT use this unless you know what you are doing def resetDB():
 def resetDB():
-    if token[0] == 0:
-        print("token parameter not set")
-    elif username[0] == 0:
-        print("username/location parameter not set")
-    else:
-        payload = {"location": username[0], "token": token[0]}
-        r1 = requests.post('https://database.nahcrof.com/resetDB', json=payload)
-        return r1
+    headers = {'X-API-Key': usertoken[0]}
+    return requests.delete(url=f"{myurl}/v2/reset/", headers=headers).json()
+
+def makeKey(key, value):
+    payload = {key: value}
+    headers = {'X-API-Key': usertoken[0]}
+    return requests.post(url=f"{myurl}/v2/keys/", headers=headers, json=payload)
+
+def delKey(key):
+    payload = [key]
+    headers = {'X-API-Key': usertoken[0]}
+    return requests.delete(url=f"{myurl}/v2/keys/", headers=headers, json=payload)
+
+def search(query):
+    headers = {'X-API-Key': usertoken[0]}
+    r = requests.get(url=f"{myurl}/v2/search/?query={quote(query)}", headers=headers).json()
+    return r
