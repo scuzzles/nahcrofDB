@@ -9,7 +9,7 @@ pip install nahcrofDB requests
 to add and test your database to project, you will need to paste the following.
 ```python 
 import nahcrofDB
-nahcrofDB.init("YOUR_API_KEY_HERE", "YOUR_USERNAME_HERE")
+nahcrofDB.init("YOUR_API_KEY_HERE")
 nahcrofDB.makeKey("test", "test value")
 print(nahcrofDB.getKey("test"))
 ```
