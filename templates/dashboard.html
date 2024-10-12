@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://home.nahcrof.com/project_ivory/styL.css">
+    <title>Dashboard</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: #333;
+            color: white;
+        }
+        .db-section {
+            margin: auto;
+            width: 80%;
+        }
+        .db-box {
+            margin-top: 25px;
+            color: white;
+            background: transparent;
+            border: 2px solid #575757;
+            padding: 20px;
+            margin-bottom: 20px; /* Add spacing between boxes when stacked vertically */
+            border-radius: 5px;
+            transition: 0.3s ease;
+            overflow-wrap: break-word;
+        }
+        .db-box:hover {
+            background: #3a3a3a;
+        }
+        a{
+            color: #4B78FF;
+            text-decoration: none;
+        }
+        a:hover{
+            text-decoration: underline;
+        }
+        .my_message {
+            text-align: center; /* Center the text inside the .my_message div */
+            margin: 20px;
+            padding: 10px;
+            border: 1px solid #575757;
+            border-radius: 5px;
+            background-color: #3A3A3A;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="db-section">
+        {% if folders == {} %}
+        <div class="my_message">
+            To create a database, go to the server cli and run the following command.<br>
+            python3 tools.py create_database DATABASE_NAME
+        </div>
+        {% endif %}
+        {% for folder in folders %}
+            <div class="db-box">
+                <h2><a href="/view_db/{{folders[folder]['name']}}">{{folders[folder]["name"]}}</a></h2>
+                Writes: {{folders[folder]["writes"]}}<br>
+                Reads: {{folders[folder]["reads"]}}
+            </div>
+        {% endfor %}
+    </div>
+</body>
+</html>

@@ -1,0 +1,88 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>nahcrofDB</title>
+    <link rel="stylesheet" href="https://home.nahcrof.com/project_ivory/styL.css">
+    <link rel="icon" href="https://home.nahcrof.com/sillyimages/smallAI.png">
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: #333;
+        }
+
+        .login-container {
+            display: flex;
+            flex-direction: column;
+            height: 60vh;
+            max-width: 400px;
+            margin: 100px auto;
+            border: 1px solid #575757;
+            border-radius: 5px;
+            padding: 20px;
+            background-color: #3A3A3A;
+        }
+
+        fancy-text {
+            color: #4B78FF;
+        }
+
+        h2 {
+            color: white;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+
+        input[type="text"], input[type="password"] {
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            border: 1px solid #575757;
+            background: transparent;
+            color: white;
+        }
+
+        .signup-option {
+            color: white;
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .signup-option a {
+            color: #4B78FF;
+            text-decoration: none;
+        }
+
+        .signup-option a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+
+<div class="login-container">
+    <h2>nahcrof<fancy-text>DB</fancy-text></h2>
+    <form method="post" action="#">
+        <input type="password" name="password" placeholder="Password" required>
+        <button type="submit" class="btn width-90 center">Login</button>
+        <div class="signup-option">
+            Your password will be under admin_password in the config.txt file.
+        </div>
+    </form>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,34 @@
+# the port the server will run on, not complicated
+TYPE: int/whole number
+port = 8080
+
+# This is the value of your password
+TYPE: string
+password_value = realpassword1234
+
+# This is the folder your databases will be stored in.
+# Will not work if folder doesn't exist
+TYPE: string
+default_path = database_folders/
+
+# this is the password to login to the admin page
+TYPE: string
+admin_password = good_password
+
+# size in mb of each database partition.
+# please note, database may slow down if value is set higher than one.
+TYPE: int/whole number
+partition_size = 1
+
+# limit of how many logs each database will record (set to "none" if you want no limit)
+TYPE: int/whole number (unless set to none)
+logs_per_database = 100
+
+# limit of database size in mb (set to "none" if you want no limit)
+TYPE: int/whole number (unless set to none)
+database_size_limit = 100
+
+# this is the folder where the write_maker or "ferris" will 
+# handle all writes
+TYPE: string
+write_folder = database_writes/
