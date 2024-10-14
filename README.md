@@ -6,6 +6,7 @@ In order to install nahcrofDB, just run
 ```
 git clone https://github.com/scuzzles/nahcrofDB.git
 ```
+Make sure to delete the "DELETE_ME.txt" files in both the "database_folders/" and "database_writes/" folders, these are here so github will actually add them.  
 Running the database is also fairly simple, you will need to have two simultaneous terminals--or whatever your method of running python programs--and run both "main.py" and "ferris.py"
 Make sure to look through the config.txt file and update everything.
 # Using database
