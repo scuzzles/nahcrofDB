@@ -10,6 +10,12 @@ write_location = config["write_folder"]
 def local_log(message):
     print(message)
 
+try:
+    os.listdir(write_location)
+except FileNotFoundError:
+    os.mkdir(write_location)
+    print("made writes folder")
+
 print("ferris started.")
 def main():
     writes = os.listdir(write_location)

@@ -139,9 +139,16 @@ if __name__ == '__main__':
                 print("backup canceled")
 
         if args[0] == "create_database":
-            db_name = args[1]
-            nahcrofDB.emptyDB(db_name)
-            print("database created!")
+            try:
+                db_name = args[1]
+                nahcrofDB.emptyDB(db_name)
+                print("database created!")
+            except FileNotFoundError:
+                os.mkdir(default_path)
+                db_name = args[1]
+                nahcrofDB.emptyDB(db_name)
+                print("database created!")
+                
 
     else:
         print("you have to run a command, silly")
