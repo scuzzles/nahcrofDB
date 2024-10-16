@@ -98,6 +98,7 @@
         <div class="bottom-btns">
             <button class="btn round-edges" onclick="location.href = '/backup/{{database}}';">Backup Database</button>
             <button class="del round-edges" onclick="delete_warning();">Delete Database</button>
+            <button class="del round-edges" onclick="set_to_backup_warning();">Set To Backup</button>
         </div><br>
     </div>
     <script>
@@ -105,6 +106,12 @@
             let choose_delete = confirm("WARNING: This will delete the \"{{database}}\" database.");
             if (choose_delete){
                 location.href = '/delete/{{database}}';
+            }
+        }
+	function set_to_backup_warning(){
+            let choose_delete = confirm("WARNING: This will delete the \"{{database}}\" database and replace it with it's most recent backup.");
+            if (choose_delete){
+                location.href = '/to_backup/{{database}}';
             }
         }
     </script>

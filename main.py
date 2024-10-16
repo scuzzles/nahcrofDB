@@ -16,6 +16,22 @@ app.config["SECRET_KEY"] = "verysecret"
 def status():
     return "alive"
 
+@app.route("/to_backup/<database>")
+def revert_db(database):
+    if "password" in session:
+        if session["password"] == admin_password:
+            nahcrofDB.setToBackup(database)
+            keys = nahcrofDB.keysamount(database)
+            size = nahcrofDB.sizeofDB(database)
+            writes = nahcrofDB.getWrites(database)
+            reads = nahcrofDB.getReads(database)
+            logs = nahcrofDB.getLogs(database)
+            return render_template("view_database.html", keys=keys, dbsize=size, writes=writes, reads=reads, logs=logs, database=database, message="database reverted")
+        else:
+            return "no cheating"
+    else:
+        return redirect("/")
+
 @app.route("/backup/<database>")
 def backup_db(database):
     if "password" in session:
@@ -52,7 +68,33 @@ def view_db(database):
             writes = nahcrofDB.getWrites(database)
             reads = nahcrofDB.getReads(database)
             logs = nahcrofDB.getLogs(database)
-            return render_template("view_database.html", keys=keys, dbsize=size, writes=writes, reads=reads, logs=logs, database=database)
+
+            try:
+                backup = nahcrofDB.spef_search(f"{database}_database_backup", "")
+                backup_exists = True
+            except FileNotFoundError:
+                backup_exists = False
+
+            if backup_exists:
+                backup_loc = f"{database}_database_backup"
+                keys1 = nahcrofDB.search(database, "")
+                keys2 = nahcrofDB.search(backup_loc, "")
+                data1 = nahcrofDB.getKeys(database, keys1)
+                data2 = nahcrofDB.getKeys(backup_loc, keys2)
+                print("mainDB")
+                print(nahcrofDB.search(database, ""))
+                print("backupDB")
+                print(nahcrofDB.search(backup_loc, ""))
+                print("")
+                if data1 == data2:
+                    message = "database MATCHES the backup"
+                else:
+                    message = "datasets DO NOT match"
+            else:
+                message = ""
+
+
+            return render_template("view_database.html", keys=keys, dbsize=size, writes=writes, reads=reads, logs=logs, database=database, message=message)
         else:
             return "no cheating"
     else:

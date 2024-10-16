@@ -84,6 +84,26 @@ def search(location, data):
         log(location, e)
         return e
 
+# spef_search is specific search, it is designed to have less restrictive error handling and only be used for testing or to compare databases.
+def spef_search(location, data):
+    newdata = str(data).lower()
+    templist = []
+    tempdict = {}
+    st = pickle.load(open(f"{default_path}{location}/usr_st.db", "rb"))
+    partitions = st["system"]["partitions"]
+    for partition in range(partitions):
+        partition = int(partition) + 1
+        tempdict[str(partition)] = pickle.load(open(f"{default_path}{location}/usr_f{partition}.db", "rb"))
+    existing = st["keys"] 
+    for item in existing:
+        try:
+            checking = str(tempdict[str(st["keys"][item])][item])  
+            if newdata in checking:
+                templist.append(item)
+        except KeyError:
+            log(location, f"SEARCH ERROR: trouble when checking values in ({item})")
+    return templist
+
 def retrieveStructure(location):
     try:
         st = pickle.load(open(f"{default_path}{location}/usr_st.db", "rb"))
