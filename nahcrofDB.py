@@ -278,16 +278,11 @@ def backupDB(location):
     try:
         os.listdir(f"{default_path}{location}_database_backup")
     except FileNotFoundError:
-        emptyDB(f"{location}_database_backup")
-    db = search(location, "")
-    alldata = getKeys(location, db)
-    for key, value in alldata.items():
-        makeKey(f"{location}_database_backup", key, value)
-    backupdb = search(f"{location}_database_backup", "")
-    backupdata = getKeys(f"{location}_database_backup", backupdb)
-    for key in backupdata:
-        if key not in db:
-            delKey(f"{location}_database_backup", key)
+        os.mkdir(f"{default_path}{location}_database_backup")
+    # assume linux
+    os.system(f"cp {default_path}{location}/. {default_path}{location}_database_backup") 
+
+
 
 
 def setToBackup(location):
