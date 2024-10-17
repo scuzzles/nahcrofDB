@@ -69,24 +69,17 @@ def view_db(database):
             reads = nahcrofDB.getReads(database)
             logs = nahcrofDB.getLogs(database)
 
+            # check exists
             try:
-                backup = nahcrofDB.spef_search(f"{database}_database_backup", "")
+                backup = nahcrofDB.getKey(f"{database}_database_backup", "")
                 backup_exists = True
             except FileNotFoundError:
                 backup_exists = False
 
+            # compare
             if backup_exists:
-                backup_loc = f"{database}_database_backup"
-                keys1 = nahcrofDB.search(database, "")
-                keys2 = nahcrofDB.search(backup_loc, "")
-                data1 = nahcrofDB.getKeys(database, keys1)
-                data2 = nahcrofDB.getKeys(backup_loc, keys2)
-                print("mainDB")
-                print(nahcrofDB.search(database, ""))
-                print("backupDB")
-                print(nahcrofDB.search(backup_loc, ""))
-                print("")
-                if data1 == data2:
+                
+                if nahcrofDB.compare_databases(database, f"{database}_database_backup"):
                     message = "database MATCHES the backup"
                 else:
                     message = "datasets DO NOT match"

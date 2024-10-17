@@ -1,4 +1,5 @@
 import sys
+import filecmp
 import time
 import os, shutil
 import pickle
@@ -25,6 +26,17 @@ def log(location, message):
         except FileNotFoundError:
             print("log file doesn't exist, should make itself so this should be impossible but here we are")
     print(f"MESSAGE TO {location} | {message}")
+
+
+def compare_databases(db1, db2):
+    if not filecmp.cmp(dir1, dir2, shallow=False):
+        return False
+
+    dircmp = filecmp.dircmp(dir1, dir2)
+    if dircmp.left_only or dircmp.right_only or dircmp.diff_files:
+        return False
+    
+    return True
 
 def logmanager(location):
     try:
@@ -298,5 +310,6 @@ def setToBackup(location):
     alldata = getKeys(backup_loc, db)
     for key, value in alldata.items():
         makeKey(location, key, value)
+
 
 
