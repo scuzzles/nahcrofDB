@@ -70,11 +70,8 @@ def view_db(database):
             logs = nahcrofDB.getLogs(database)
 
             # check exists
-            try:
-                backup = nahcrofDB.getKey(f"{database}_database_backup", "")
-                backup_exists = True
-            except FileNotFoundError:
-                backup_exists = False
+            default_path = read_config.config["default_path"]
+            backup_exists = os.path.exists(f"{default_path}{location}/usr.st")
 
             # compare
             if backup_exists:
