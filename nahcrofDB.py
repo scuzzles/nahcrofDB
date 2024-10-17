@@ -29,10 +29,12 @@ def log(location, message):
 
 
 def compare_databases(db1, db2):
-    if not filecmp.cmp(dir1, dir2, shallow=False):
+    db1 = f"{default_path}{db1}"
+    db2 = f"{default_path}{db2}"
+    if not filecmp.cmp(db1, db2, shallow=False):
         return False
 
-    dircmp = filecmp.dircmp(dir1, dir2)
+    dircmp = filecmp.dircmp(db1, db2)
     if dircmp.left_only or dircmp.right_only or dircmp.diff_files:
         return False
     
@@ -310,6 +312,7 @@ def setToBackup(location):
     alldata = getKeys(backup_loc, db)
     for key, value in alldata.items():
         makeKey(location, key, value)
+
 
 
 
