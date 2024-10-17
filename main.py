@@ -124,12 +124,12 @@ def dashboard():
         if session["password"] == admin_password:
             all_folders = os.listdir(read_config.config["default_path"])
             print(all_folders)
+            all_folders = sorted(all_folders)
             folders = {}
             for folder in all_folders:
                 reads = nahcrofDB.getReads(folder)
                 writes = nahcrofDB.getWrites(folder)
                 folders[folder] = {"name": folder, "reads": reads, "writes": writes}
-            print(folders)
             return render_template("dashboard.html", folders=folders)
         else:
             return "no cheating"
