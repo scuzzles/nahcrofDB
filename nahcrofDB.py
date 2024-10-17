@@ -280,7 +280,7 @@ def backupDB(location):
     except FileNotFoundError:
         os.mkdir(f"{default_path}{location}_database_backup")
     # assume linux
-    os.system(f"cp {default_path}{location}/. {default_path}{location}_database_backup") 
+    os.system(f"cp -r {default_path}{location}/. {default_path}{location}_database_backup") 
 
 
 
