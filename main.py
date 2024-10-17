@@ -71,7 +71,7 @@ def view_db(database):
 
             # check exists
             default_path = read_config.config["default_path"]
-            backup_exists = os.path.exists(f"{default_path}{location}/usr.st")
+            backup_exists = os.path.exists(f"{default_path}{database}/usr.st")
 
             # compare
             if backup_exists:
