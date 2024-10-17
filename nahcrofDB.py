@@ -1,3 +1,4 @@
+
 import sys
 import filecmp
 import time
@@ -31,14 +32,16 @@ def log(location, message):
 def compare_databases(db1, db2):
     db1 = f"{default_path}{db1}"
     db2 = f"{default_path}{db2}"
-    if not filecmp.cmp(db1, db2, shallow=False):
-        return False
-
-    dircmp = filecmp.dircmp(db1, db2)
-    if dircmp.left_only or dircmp.right_only or dircmp.diff_files:
-        return False
-    
+    db1_files = os.listdir(db1)
+    db2_files = os.listdir(db2)
+    for file in db1_files:
+        if file in db2_files:
+            if not filecmp.cmp(f"{db1}/{file}", f"{db2}/{file}"):
+                return False
+        else:
+            return False
     return True
+
 
 def logmanager(location):
     try:
@@ -312,6 +315,7 @@ def setToBackup(location):
     alldata = getKeys(backup_loc, db)
     for key, value in alldata.items():
         makeKey(location, key, value)
+
 
 
 
