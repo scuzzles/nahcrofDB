@@ -1,4 +1,3 @@
-
 # ferris is a write maker, the purpose of this program is to constantly check a folder for new write requests as a form of load balancing
 import os
 import pickle

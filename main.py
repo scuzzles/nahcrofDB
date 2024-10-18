@@ -36,6 +36,15 @@ def revert_db(database):
     else:
         return redirect("/")
 
+@app.route("/create_database", methods=["POST", "GET"])
+def UI_create_database():
+    if request.method == "POST":
+        db_name = request.form["database_name"]
+        nahcrofDB.emptyDB(db_name)
+        return redirect("/dashboard")
+    else:
+        return render_template("create_database.html")
+
 @app.route("/backup/<database>")
 def backup_db(database):
     if "password" in session:

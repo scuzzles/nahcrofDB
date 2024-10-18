@@ -54,11 +54,15 @@
     <div class="db-section">
         {% if folders == {} %}
         <div class="my_message">
-            To create a database, go to the server cli and run the following command.<br>
-            python3 tools.py create_database DATABASE_NAME
+	    You currently have no databases.
+            <button style="margin-top: 10px;" class="btn round-edges" onclick="location.href = '/create_database';">Create Database</button>
         </div>
+
         {% endif %}
+	<br>
+	<button style="margin-top: 10px;" class="btn round-edges" onclick="location.href = '/create_database';">Create Database</button>
         {% for folder in folders %}
+
             <div class="db-box">
                 <h2><a href="/view_db/{{folders[folder]['name']}}">{{folders[folder]["name"]}}</a></h2>
                 Writes: {{folders[folder]["writes"]}}<br>
