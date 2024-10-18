@@ -64,11 +64,20 @@
             border-color: #E31836;
             cursor: pointer;
         } 
+	.top_buttons{
+	    display: flex;
+	}
+	.ml{
+	    margin-left: 10px;
+	}
     </style>
 </head>
 <body>
     <div class="db-section"><br>
-        <button class="btn round-edges" onclick="location.href = '/dashboard';">Home</button>
+	<div class="top_buttons">
+	    <button class="btn round-edges" onclick="location.href = '/dashboard';">Home</button>
+	    <button class="btn round-edges ml" onclick="location.href = '/view_db/{{database}}';">Refresh view</button>
+	</div>
         {% if message %}
             <h2>{{message}}</h2><br>
         {% endif %}
