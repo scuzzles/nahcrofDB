@@ -6,6 +6,10 @@ In order to install nahcrofDB, just run
 ```
 git clone https://github.com/scuzzles/nahcrofDB.git
 ```
+After installing, make sure that you have the required packages installed, the command for this is as follows.
+```
+pip install flask requests
+```
 Make sure to look through the config.txt file and update everything.
 "admin_password" is the password to acces the UI.
 "password_value" is the password used when accessing the database api.
