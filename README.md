@@ -6,8 +6,9 @@ In order to install nahcrofDB, just run
 ```
 git clone https://github.com/scuzzles/nahcrofDB.git
 ```
-Running the database is also fairly simple, you will need to have two simultaneous terminals--or whatever your method of running python programs--and run both "main.py" and "ferris.py"
 Make sure to look through the config.txt file and update everything.
+"admin_password" is the password to acces the UI.
+"password_value" is the password used when accessing the database api.
 # Using database
 in order to interact with the database, use client.py on the server that will be accessing the database server.
 If you are trying to directly interact with the database or create a new database you will use the cli on the server.
