@@ -3,11 +3,15 @@ from flask import Flask, request, jsonify, render_template, url_for, redirect, s
 import pickle
 import os
 import read_config
+import threading
 mainpass = read_config.config["password_value"]
 admin_password = read_config.config["admin_password"]
 # TODO, make visual UI with admin password
 
 write_location = ["ferris"]
+
+def run_ferris():
+    os.system("python3 ferris.py")
 
 app = Flask(__name__)
 app.config["SECRET_KEY"] = "verysecret"
@@ -112,15 +116,27 @@ def home():
 def dashboard():
     if "password" in session:
         if session["password"] == admin_password:
-            all_folders = os.listdir(read_config.config["default_path"])
-            print(all_folders)
-            all_folders = sorted(all_folders)
-            folders = {}
-            for folder in all_folders:
-                reads = nahcrofDB.getReads(folder)
-                writes = nahcrofDB.getWrites(folder)
-                folders[folder] = {"name": folder, "reads": reads, "writes": writes}
-            return render_template("dashboard.html", folders=folders)
+            try:
+                all_folders = os.listdir(read_config.config["default_path"])
+                print(all_folders)
+                all_folders = sorted(all_folders)
+                folders = {}
+                for folder in all_folders:
+                    reads = nahcrofDB.getReads(folder)
+                    writes = nahcrofDB.getWrites(folder)
+                    folders[folder] = {"name": folder, "reads": reads, "writes": writes}
+                return render_template("dashboard.html", folders=folders)
+            except FileNotFoundError:
+                os.mkdir(read_config.config["default_path"])
+                all_folders = os.listdir(read_config.config["default_path"])
+                print(all_folders)
+                all_folders = sorted(all_folders)
+                folders = {}
+                for folder in all_folders:
+                    reads = nahcrofDB.getReads(folder)
+                    writes = nahcrofDB.getWrites(folder)
+                    folders[folder] = {"name": folder, "reads": reads, "writes": writes}
+                return render_template("dashboard.html", folders=folders)
         else:
             return "no cheating"
     else:
@@ -285,6 +301,9 @@ def deleteDB(password):
         return "success", 205
     else:
         return "no", 403
+
+ferris_thread = threading.Thread(target=run_ferris)
+ferris_thread.start()
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=int(read_config.config["port"]))

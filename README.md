@@ -12,6 +12,7 @@ Make sure to look through the config.txt file and update everything.
 in order to interact with the database, use client.py on the server that will be accessing the database server.
 If you are trying to directly interact with the database or create a new database you will use the cli on the server.
 To create a new database, you wil run...
+## Creating a database
 ```
 python3 tools.py create_database DATABASE_NAME_HERE
 ```
@@ -32,6 +33,14 @@ check_backup <location> - compare a database to it's corresponding backup
 set_to_backup <location> - set the database to a pre-existing backup
 create_database <folder_name> - creates empty database within specified folder
 ```
+## Running the database
+In order to run nahcrofDB you will run the following command.
+```
+python3 main.py
+```
+Please note that as of right now, nahcrofDB does not work in linux.
+Running "main.py" will start both the HTTP handler and "ferris."
+In short, ferris handles queued write requests.
 # Using client.py
 client.py is the python api wrapper for nahcrofDB.
 To start, you will use the nahcrofDB.init function.
