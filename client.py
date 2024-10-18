@@ -38,7 +38,7 @@ def getKeysList(keynames: list):
     templist = []
     for keyname in keynames:
         listnum = len(templist)
-        keydata = f"&key_{listnum}={quote(keyname)}"
+        keydata = f"&key_{listnum}={keyname}"
         templist.append(keydata)
     keynamenum = len(keynames)
     result = "".join(templist)
@@ -98,8 +98,8 @@ def keynums():
 
 def emptyDB():
     payload = {"location": DB_folder[0]}
-    r = requests.post(f'{URL[0]}/emptyDB/{os.environ["DB_pass"]}/', json=payload)
+    r = requests.post(f'{URL[0]}/emptyDB/{DB_pass[0]}/', json=payload)
 
 def deleteDB():
     payload = {"location": DB_folder[0]}
-    r = requests.post(f'{URL[0]}/deleteDB/{os.environ["DB_pass"]}/', json=payload)
+    r = requests.post(f'{URL[0]}/deleteDB/{DB_pass[0]}/', json=payload)
