@@ -307,15 +307,5 @@ def setToBackup(location):
     except FileNotFoundError:
         print("backup does not exist, good luck!")
         return "failed"
-    backup_loc = f"{location}_database_backup"
-    deleteDB(location)
-    emptyDB(location)
-    db = search(backup_loc, "")
-    alldata = getKeys(backup_loc, db)
-    for key, value in alldata.items():
-        makeKey(location, key, value)
 
-
-
-
-
+    os.system(f"cp -r {default_path}{location}_database_backup/. {default_path}{location}")
