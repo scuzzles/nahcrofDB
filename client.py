@@ -7,7 +7,7 @@ DB_folder = [0]
 DB_pass = [0]
 URL = [0]
 
-def init(folder, url, password):
+def init(folder, url, password): # store important data in globally defined lists.
     DB_folder[0] = folder
     URL[0] = url
     DB_pass[0] = password
@@ -17,7 +17,7 @@ def getKey(keyname):
     data = r.json()
     return data["keycontent"]
 
-def search(data):
+def search(data): # search database for keys containing specified data.
     r = requests.get(url=f"{URL[0]}/search/{DB_pass[0]}/?location={quote(DB_folder[0])}&parameter={quote(data)}")
     response = r.json()
     return response["data"]
@@ -34,7 +34,7 @@ def getKeys(*keynames):
     data = r.json()
     return data
 
-def getKeysList(keynames: list):
+def getKeysList(keynames: list): # get multiple keys with one request using one list parameter.
     templist = []
     for keyname in keynames:
         listnum = len(templist)
@@ -51,7 +51,7 @@ def makeKey(keyname, keycontent):
     r1 = requests.post(f'{URL[0]}/makeKey/{DB_pass[0]}/', json=payload)
     return r1
 
-def makeKeys(data):
+def makeKeys(data): # make multiple keys with one request containing a dictionary of updates.
     payload = {"location": DB_folder[0], "data": data}
     r1 = requests.post(f'{URL[0]}/makeKeys/{DB_pass[0]}/', json=payload)
     return r1
@@ -96,7 +96,8 @@ def keynums():
     data = r.json()
     return data["size"]
 
-def emptyDB():
+
+def emptyDB(): # creates an empty database folder.
     payload = {"location": DB_folder[0]}
     r = requests.post(f'{URL[0]}/emptyDB/{DB_pass[0]}/', json=payload)
 

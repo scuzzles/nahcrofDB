@@ -10,6 +10,7 @@ admin_password = read_config.config["admin_password"]
 
 write_location = ["ferris"]
 
+# this function is ran at the end of a file in a seperate thread. Allows both ferris and main.py to run within one file
 def run_ferris():
     os.system("python3 ferris.py")
 
@@ -20,6 +21,7 @@ app.config["SECRET_KEY"] = "verysecret"
 def status():
     return "alive"
 
+# this page reverts the database to it's most recent backup, primarily handled at nahcrofDB.setToBackup
 @app.route("/to_backup/<database>")
 def revert_db(database):
     if "password" in session:
@@ -36,6 +38,7 @@ def revert_db(database):
     else:
         return redirect("/")
 
+# create an empty database from a form
 @app.route("/create_database", methods=["POST", "GET"])
 def UI_create_database():
     if request.method == "POST":
@@ -45,6 +48,7 @@ def UI_create_database():
     else:
         return render_template("create_database.html")
 
+# backup database using nahcrofDB.backupDB
 @app.route("/backup/<database>")
 def backup_db(database):
     if "password" in session:
@@ -61,6 +65,7 @@ def backup_db(database):
     else:
         return redirect("/")
 
+# delete database using nahcrofDB.deleteDB
 @app.route("/delete/<database>")
 def delete_DB(database):
     if "password" in session:

@@ -9,6 +9,7 @@ utf = "utf-8"
 # file_stats.st_size / (1024 * 1024)
 default_path = config["default_path"]
 
+# this will log a message to the location/database folder
 def log(location, message):
     try:
         logs = logmanager(location)
@@ -27,7 +28,6 @@ def log(location, message):
             print("log file doesn't exist, should make itself so this should be impossible but here we are")
     print(f"MESSAGE TO {location} | {message}")
 
-
 def compare_databases(db1, db2):
     db1 = f"{default_path}{db1}"
     db2 = f"{default_path}{db2}"
@@ -41,7 +41,7 @@ def compare_databases(db1, db2):
             return False
     return True
 
-
+# view logs and retry if file is being written to
 def logmanager(location):
     try:
         logs = pickle.load(open(f"{default_path}{location}/usr.logs", "rb"))
@@ -49,7 +49,7 @@ def logmanager(location):
     except EOFError:
         return logmanager(location)
 
-
+# view logs using logmanager, create empty logs file if something goes wrong.
 def getLogs(location):
     try:
         return logmanager(location)
@@ -57,8 +57,7 @@ def getLogs(location):
         pickle.dump([], open(f"{default_path}{location}/usr.logs", "wb"))
         return getLogs(location)
 
-# {default_path}
-
+# returns keys portion of structure file, essentially the location data of each key.
 def keys(location):
     try:
         content = pickle.load(open(f"{default_path}{location}/usr_st.db", "rb"))["keys"]
@@ -120,6 +119,8 @@ def spef_search(location, data):
             log(location, f"SEARCH ERROR: trouble when checking values in ({item})")
     return templist
 
+# gets the structure file, structure file is a file containing the partition in which each key exists.
+# the structure file also includes useful data like "writes" which is total writes to the database.
 def retrieveStructure(location):
     try:
         st = pickle.load(open(f"{default_path}{location}/usr_st.db", "rb"))
@@ -149,6 +150,7 @@ def getKey(location, keyname):
     return content
 
 def makeKey(location, keyname, keycontent):
+    # check database size in mb
     try:
         files = os.listdir(f"{default_path}{location}")
         for file in files:
@@ -156,6 +158,7 @@ def makeKey(location, keyname, keycontent):
             mbs = file_stats.st_size / (1000 * 1000)
     except Exception as e:
         mbs = 0
+    # compare database size to size limit
     try:
         size_limit = config["database_size_limit"]
         if size_limit == "none":
@@ -167,7 +170,7 @@ def makeKey(location, keyname, keycontent):
     except Exception as e:
         print()
 
-
+    # uhhhhh, make key if it does not exist and update it if it does, in a safe way.
     try:
         st = pickle.load(open(f"{default_path}{location}/usr_st.db", "rb"))
         partitions = st["system"]["partitions"]
@@ -209,6 +212,7 @@ def makeKey(location, keyname, keycontent):
         st = {"keys": {keyname: 1}, "system": {"partitions": 1, "writes": 0}}
         pickle.dump(db, open(f"{default_path}{location}/usr_f1.db", "wb"))
         pickle.dump(st, open(f"{default_path}{location}/usr_st.db", "wb"))
+        # this error message is to say that the database has been deleted, should not happen, hopefully.
         log(location, "If you're seeing this, something probably went very wrong (this database was set empty)")
     finally:
         try:
@@ -219,6 +223,7 @@ def makeKey(location, keyname, keycontent):
             return makeKey(location, keyname, keycontent)
         if keyname not in structure_check:
             time.sleep(0.2)
+            # retry if key does not exist, implying key was never properly made
             log(location, f"key ({keyname}) not found after creation, retrying")
             return makeKey(location, keyname, keycontent)
         else:
@@ -290,6 +295,7 @@ def emptyDB(location):
 def deleteDB(location):
     os.system(f"rm -r {default_path}{location}")
 
+# assume linux is used and use cp command to transfer files
 def backupDB(location):
     try:
         os.listdir(f"{default_path}{location}_database_backup")
@@ -298,9 +304,7 @@ def backupDB(location):
     # assume linux
     os.system(f"cp -r {default_path}{location}/. {default_path}{location}_database_backup") 
 
-
-
-
+# same sollution as backupDB, just reverse
 def setToBackup(location):
     try:
         os.listdir(f"{default_path}{location}_database_backup")
