@@ -43,23 +43,23 @@ In order to run nahcrofDB you will run the following command.
 ```
 python3 main.py
 ```
-Please note that as of right now, nahcrofDB does not work in linux.
+Please note that as of right now, nahcrofDB will only work in linux.
 Running "main.py" will start both the HTTP handler and "ferris."
 In short, ferris handles queued write requests.
 # Using client.py
 client.py is the python api wrapper for nahcrofDB.
 To start, you will use the nahcrofDB.init function.
 ```python
-nahcrofDB.init("my_db_name", "url.com", "password_here")
+client.init("my_db_name", "url.com", "password_here")
 ```
 ## Making Keys
 To make one key, you can do this.
 ```python
-nahcrofDB.makeKey("my_key", "my value")
+client.makeKey("my_key", "my value")
 ```
 To make multiple keys at once (less database strain) you can use the following function.
 ```python
-nahcrofDB.makeKeys({
+client.makeKeys({
     "key": "value",
     "key2": "value",
     "testkey": "testvalue"
@@ -68,7 +68,7 @@ nahcrofDB.makeKeys({
 ## Getting Keys
 To get one key, you can use getKey
 ```python
-nahcrofDB.getKey("my_key")
+client.getKey("my_key")
 ```
 OUTPUT:
 ```
@@ -76,7 +76,7 @@ my value
 ```
 To get multiple keys, you can use getKeys
 ```python
-keys = nahcrofDB.getKeys(["key", "key2"])
+keys = client.getKeys(["key", "key2"])
 ```
 OUTPUT:
 ```
@@ -85,7 +85,7 @@ OUTPUT:
 ## Searching the database
 To find keys containing specific data, you can use the .search function
 ```python
-nahcrofDB.search("test")
+client.search("test")
 ```
 OUTPUT:
 ```
