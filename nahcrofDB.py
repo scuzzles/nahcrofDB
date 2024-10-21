@@ -3,7 +3,6 @@ import filecmp
 import time
 import os, shutil
 import pickle
-import requests
 from read_config import config
 utf = "utf-8"
 # file_stats.st_size / (1024 * 1024)
