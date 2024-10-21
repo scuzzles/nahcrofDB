@@ -299,7 +299,7 @@ def deleteDB(location):
 def backupDB(location):
     try:
         os.listdir(f"{default_path}{location}_database_backup")
-        deleteDB(location)
+        deleteDB(f"{default_path}{location}_database_backup")
     except FileNotFoundError:
         os.mkdir(f"{default_path}{location}_database_backup")
     # assume linux
