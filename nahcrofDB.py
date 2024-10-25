@@ -181,7 +181,7 @@ def makeKey(location, keyname, keycontent):
             if mbs > partition_size:
                 partitions = st["system"]["partitions"] + 1 
                 st["system"]["partitions"] = partitions
-                st["keys"][keyname] = partitions + 1
+                st["keys"][keyname] = partitions - 1
                 st["system"]["writes"] = st["system"]["writes"] + 1
                 pickle.dump(st, open(f"{default_path}{location}/usr_st.tmp", "wb"))
                 pickle.dump({}, open(f"{default_path}{location}/usr_f{partitions}.db", "wb"))
@@ -221,10 +221,99 @@ def makeKey(location, keyname, keycontent):
             time.sleep(0.1)
             return makeKey(location, keyname, keycontent)
         if keyname not in structure_check:
+            structure_check = [pickle.load(open(f"{default_path}{location}/usr_st.db","rb"))["keys"]]
+            encounters = 0
+            while keyname not in structure_check[0]:
+                structure_check[0] = pickle.load(open(f"{default_path}{location}/usr_st.db","rb"))["keys"]
+                encounters += 1
+                # sleep to give server time to catch up before remake 
+                time.sleep(0.1)
+                # retry if key does not exist, implying key was never properly made
+                log(location, f"key ({keyname}) not found after creation, encounter: ({encounters}), (retrying)")
+                attempt = remakeKey(location, keyname, keycontent)
+                if attempt == "success":
+                    log(location, f"key ({keyname}) resolved and successfully updated")
+                    return "success"
+        else:
+            return "success"
+
+def remakeKey(location, keyname, keycontent):
+    # check database size in mb
+    try:
+        files = os.listdir(f"{default_path}{location}")
+        for file in files:
+            file_stats = os.stat(f"{default_path}{location}/{file}.db")
+            mbs = file_stats.st_size / (1000 * 1000)
+    except Exception as e:
+        mbs = 0
+    # compare database size to size limit
+    try:
+        size_limit = config["database_size_limit"]
+        if size_limit == "none":
+            pass
+        else:
+            if mbs > int(size_limit):
+                log(location, "database size limit exceeded")
+                return "database too large"
+    except Exception as e:
+        print()
+
+    # uhhhhh, make key if it does not exist and update it if it does, in a safe way.
+    try:
+        st = pickle.load(open(f"{default_path}{location}/usr_st.db", "rb"))
+        partitions = st["system"]["partitions"]
+        print(f"partitions begin: {partitions}")
+        if keyname not in st["keys"]:
+            file_stats = os.stat(f"{default_path}{location}/usr_f{partitions}.db")
+            mbs = file_stats.st_size / (1000 * 1000)
+            partition_size = int(config["partition_size"])
+            if mbs > partition_size:
+                partitions = st["system"]["partitions"] + 1 
+                st["system"]["partitions"] = partitions
+                st["keys"][keyname] = partitions - 1
+                st["system"]["writes"] = st["system"]["writes"] + 1
+                pickle.dump(st, open(f"{default_path}{location}/usr_st.tmp", "wb"))
+                pickle.dump({}, open(f"{default_path}{location}/usr_f{partitions}.db", "wb"))
+            else:
+                st["keys"][keyname] = partitions
+                st["system"]["writes"] = st["system"]["writes"] + 1
+                pickle.dump(st, open(f"{default_path}{location}/usr_st.tmp", "wb"))
+            partitions = pickle.load(open(f"{default_path}{location}/usr_st.db", "rb"))["system"]["partitions"]
+            db = pickle.load(open(f"{default_path}{location}/usr_f{partitions}.db", "rb"))
+            db[keyname] = keycontent
+            pickle.dump(db, open(f"{default_path}{location}/usr_f{partitions}.tmp", "wb"))
+            os.replace(f"{default_path}{location}/usr_f{partitions}.tmp", f"{default_path}{location}/usr_f{partitions}.db")
+            os.replace(f"{default_path}{location}/usr_st.tmp", f"{default_path}{location}/usr_st.db")
+
+        else:
+            correctpartition = st["keys"][keyname]
+            st["system"]["writes"] = st["system"]["writes"] + 1
+            pickle.dump(st, open(f"{default_path}{location}/usr_st.tmp", "wb"))
+            db = pickle.load(open(f"{default_path}{location}/usr_f{correctpartition}.db", "rb"))
+            db[keyname] = keycontent
+            pickle.dump(db, open(f"{default_path}{location}/usr_f{correctpartition}.tmp", "wb"))
+            os.replace(f"{default_path}{location}/usr_f{correctpartition}.tmp", f"{default_path}{location}/usr_f{correctpartition}.db")
+            os.replace(f"{default_path}{location}/usr_st.tmp", f"{default_path}{location}/usr_st.db")
+    except Exception as e:
+        os.mkdir(f"{default_path}{location}")
+        db = {keyname: keycontent}
+        st = {"keys": {keyname: 1}, "system": {"partitions": 1, "writes": 0}}
+        pickle.dump(db, open(f"{default_path}{location}/usr_f1.db", "wb"))
+        pickle.dump(st, open(f"{default_path}{location}/usr_st.db", "wb"))
+        # this error message is to say that the database has been deleted, should not happen, hopefully.
+        log(location, "If you're seeing this, something probably went very wrong (this database was set empty)")
+    finally:
+        try:
+            structure_check = pickle.load(open(f"{default_path}{location}/usr_st.db","rb"))["keys"]
+        except Exception as e:
+            log(location, f"error checking DB structure when creating ({keyname}), retrying")
+            time.sleep(0.1)
+            return "STRUCTURE ERROR"
+        if keyname not in structure_check:
             time.sleep(0.2)
             # retry if key does not exist, implying key was never properly made
             log(location, f"key ({keyname}) not found after creation, retrying")
-            return makeKey(location, keyname, keycontent)
+            return "KEY NOT MADE"
         else:
             return "success"
 
@@ -313,3 +402,4 @@ def setToBackup(location):
         return "failed"
     deleteDB(location)
     os.system(f"cp -r {default_path}{location}_database_backup/. {default_path}{location}")
+
