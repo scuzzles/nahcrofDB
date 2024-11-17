@@ -1,28 +1,32 @@
 import requests
 import json
 from urllib.parse import quote
+from typing import Any
 import os
 
 DB_folder = [0]
 DB_pass = [0]
 URL = [0]
 
-def init(folder, url, password): # store important data in globally defined lists.
+
+def init(folder: str, url: str, password: str) -> None: 
+    # store important data in globally defined lists.
     DB_folder[0] = folder
     URL[0] = url
     DB_pass[0] = password
 
-def getKey(keyname):
+def getKey(keyname: str) -> Any:
     r = requests.get(url=f"{URL[0]}/getKey/{DB_pass[0]}/?location={quote(DB_folder[0])}&keyname={quote(keyname)}")
     data = r.json()
     return data["keycontent"]
 
-def search(data): # search database for keys containing specified data.
+def search(data: str) -> list[str]: 
+    # search database for keys containing specified data.
     r = requests.get(url=f"{URL[0]}/search/{DB_pass[0]}/?location={quote(DB_folder[0])}&parameter={quote(data)}")
     response = r.json()
     return response["data"]
 
-def getKeys(*keynames):
+def getKeys(*keynames) -> dict:
     templist = []
     for keyname in keynames:
         listnum = len(templist)
@@ -34,7 +38,8 @@ def getKeys(*keynames):
     data = r.json()
     return data
 
-def getKeysList(keynames: list): # get multiple keys with one request using one list parameter.
+def getKeysList(keynames: list) -> dict: 
+    # get multiple keys with one request using one list parameter.
     templist = []
     for keyname in keynames:
         listnum = len(templist)
@@ -46,17 +51,17 @@ def getKeysList(keynames: list): # get multiple keys with one request using one 
     data = r.json()
     return data
 
-def makeKey(keyname, keycontent):
+def makeKey(keyname: str, keycontent: Any):
     payload = {"location": DB_folder[0], "keyname": keyname, "keycontent": keycontent}
     r1 = requests.post(f'{URL[0]}/makeKey/{DB_pass[0]}/', json=payload)
     return r1
 
-def makeKeys(data): # make multiple keys with one request containing a dictionary of updates.
+def makeKeys(data: dict): # make multiple keys with one request containing a dictionary of updates.
     payload = {"location": DB_folder[0], "data": data}
     r1 = requests.post(f'{URL[0]}/makeKeys/{DB_pass[0]}/', json=payload)
     return r1
 
-def delKey(keyname):
+def delKey(keyname: str):
     payload = {"location": DB_folder[0], "keyname": keyname}
     r1 = requests.post(f'{URL[0]}/delKey/{DB_pass[0]}/', json=payload)
     return r1
