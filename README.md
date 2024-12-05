@@ -74,6 +74,11 @@ OUTPUT:
 ```
 my value
 ```
+NOTE:
+if you attempt to use getKey and the key does not exist, the response will be as follows
+```
+Key does not exist, DATABASE erroR
+```
 To get multiple keys, you can use getKeys
 ```python
 keys = client.getKeys(["key", "key2"])
@@ -92,4 +97,4 @@ OUTPUT:
 ['testkey']
 ```
 # HTTP Docs
-this section is a work in progress (sorry). We plan to have this finished within a month (for reference, that's 11/11 since I'm writing this on 10/11).
+this section is a work in progress (sorry). We plan to have this finished within a month (that was a lie, I am going to rewrite the API and then release docs for v2, oops).
