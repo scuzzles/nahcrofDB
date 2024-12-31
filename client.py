@@ -15,10 +15,13 @@ def init(folder: str, url: str, password: str) -> None:
     URL[0] = url
     DB_pass[0] = password
 
-def getKey(keyname: str) -> Any:
-    r = requests.get(url=f"{URL[0]}/getKey/{DB_pass[0]}/?location={quote(DB_folder[0])}&keyname={quote(keyname)}")
-    data = r.json()
-    return data["keycontent"]
+def getKey(key: str) -> Any:
+    headers = {'X-API-Key': DB_pass[0]}
+    r = requests.get(url=f"{URL[0]}/v2/key/{quote(key)}/{quote(DB_folder[0])}", headers=headers).json()
+    try:
+        return r["value"]
+    except KeyError:
+        return r
 
 def search(data: str) -> list[str]: 
     # search database for keys containing specified data.
@@ -26,86 +29,42 @@ def search(data: str) -> list[str]:
     response = r.json()
     return response["data"]
 
-def getKeys(*keynames) -> dict:
+def getKeys(*keys) -> dict:
     templist = []
-    for keyname in keynames:
-        listnum = len(templist)
-        keydata = f"&key_{listnum}={keyname}"
-        templist.append(keydata)
-    keynamenum = len(keynames)
+    headers = {'X-API-Key': DB_pass[0]}
+    templist.append(f"?key[]={quote(str(keys[0]))}")
+    if len(keys) > 1:
+        for key in keys:
+            if f"?key[]={key}" in templist:
+                pass
+            else:
+                templist.append(f"&key[]={quote(str(key))}")
     result = "".join(templist)
-    r = requests.get(url=f"{URL[0]}/getKeys/{DB_pass[0]}/?location={quote(DB_folder[0])}&keynamenum={keynamenum}" + result)
-    data = r.json()
-    return data
+    return requests.get(url=f"{URL[0]}/v2/keys/{quote(DB_folder[0])}/{result}", headers=headers).json()
 
-def getKeysList(keynames: list) -> dict: 
-    # get multiple keys with one request using one list parameter.
+def getKeysList(keys: list) -> dict:
     templist = []
-    for keyname in keynames:
-        listnum = len(templist)
-        keydata = f"&key_{listnum}={keyname}"
-        templist.append(keydata)
-    keynamenum = len(keynames)
+    headers = {'X-API-Key': DB_pass[0]}
+    templist.append(f"?key[]={quote(str(keys[0]))}")
+    if len(keys) > 1:
+        for key in keys:
+            if f"?key[]={key}" in templist:
+                pass
+            else:
+                templist.append(f"&key[]={quote(str(key))}")
     result = "".join(templist)
-    r = requests.get(url=f"{URL[0]}/getKeys/{DB_pass[0]}/?location={quote(DB_folder[0])}&keynamenum={keynamenum}" + result)
-    data = r.json()
-    return data
+    return requests.get(url=f"{URL[0]}/v2/keys/{quote(DB_folder[0])}/{result}", headers=headers).json()
 
-def makeKey(keyname: str, keycontent: Any):
-    payload = {"location": DB_folder[0], "keyname": keyname, "keycontent": keycontent}
-    r1 = requests.post(f'{URL[0]}/makeKey/{DB_pass[0]}/', json=payload)
-    return r1
+def makeKey(key: str, value: Any):
+    payload = {key: value}
+    headers = {'X-API-Key': DB_pass[0]}
+    return requests.post(url=f"{URL[0]}/v2/keys/{quote(DB_folder[0])}/", headers=headers, json=payload)
 
-def makeKeys(data: dict): # make multiple keys with one request containing a dictionary of updates.
-    payload = {"location": DB_folder[0], "data": data}
-    r1 = requests.post(f'{URL[0]}/makeKeys/{DB_pass[0]}/', json=payload)
-    return r1
+def makeKeys(data: dict):
+    headers = {'X-API-Key': DB_pass[0]}
+    return requests.post(url=f"{URL[0]}/v2/keys/{quote(DB_folder[0])}/", headers=headers, json=data)
 
-def delKey(keyname: str):
-    payload = {"location": DB_folder[0], "keyname": keyname}
-    r1 = requests.post(f'{URL[0]}/delKey/{DB_pass[0]}/', json=payload)
-    return r1
-
-def Keys():
-    r = requests.get(f"{URL[0]}/keys/{quote(DB_folder[0])}/{DB_pass[0]}/")
-    data = r.json()
-    return eval(data["keys"]).keys()
-
-def getLogs():
-    r = requests.get(f"{URL[0]}/logs/{quote(DB_folder[0])}/{DB_pass[0]}/")
-    data = r.json()
-    return eval(data["logs"])
-
-def getAll():
-    r = requests.get(f"{URL[0]}/keys/{quote(DB_folder[0])}/{DB_pass[0]}/")
-    data = r.json()
-    return eval(data["keys"])
-
-def getWrites():
-    r = requests.get(f"{URL[0]}/writes/{quote(DB_folder[0])}/{DB_pass[0]}/")
-    data = r.json()
-    return data
-
-def getReads():
-    r = requests.get(f"{URL[0]}/reads/{quote(DB_folder[0])}/{DB_pass[0]}/")
-    data = r.json()
-    return data
-
-def size():
-    r = requests.get(url=f"{URL[0]}/databaseSize/{quote(DB_folder[0])}/{DB_pass[0]}/")
-    data = r.json()
-    return data["size"]
-
-def keynums():
-    r = requests.get(url=f"{URL[0]}/keynums/{quote(DB_folder[0])}/{DB_pass[0]}/")
-    data = r.json()
-    return data["size"]
-
-
-def emptyDB(): # creates an empty database folder.
-    payload = {"location": DB_folder[0]}
-    r = requests.post(f'{URL[0]}/emptyDB/{DB_pass[0]}/', json=payload)
-
-def deleteDB():
-    payload = {"location": DB_folder[0]}
-    r = requests.post(f'{URL[0]}/deleteDB/{DB_pass[0]}/', json=payload)
+def delKey(key: str):
+    payload = [key]
+    headers = {'X-API-Key': DB_pass[0]}
+    return requests.delete(url=f"{URL[0]}/v2/keys/{quote(DB_folder[0])}/", headers=headers, json=payload)

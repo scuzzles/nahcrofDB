@@ -21,6 +21,10 @@ app.config["SECRET_KEY"] = "verysecret"
 def status():
     return "alive"
 
+@app.route("/file")
+def filething():
+    return render_template("test.html")
+
 # this page reverts the database to it's most recent backup, primarily handled at nahcrofDB.setToBackup
 @app.route("/to_backup/<database>")
 def revert_db(database):
@@ -315,6 +319,124 @@ def deleteDB(password):
         return "success", 205
     else:
         return "no", 403
+
+@app.route("/v2/key/<key>/<db>")
+def keyv2(key, db):
+    try:
+        token = request.headers.get("X-API-KEY")
+        if token == mainpass:
+            location = db
+            newdata = nahcrofDB.getKey(location, key)
+            if newdata == "Key does not exist, DATABASE erroR":
+                user_data = {
+                    "error": True,
+                    "status": 404,
+                    "message": f"Key ({key}) does not exist."
+                }
+                return jsonify(user_data), 404
+            else:
+                user_data = {
+                    "error": False,
+                    "status": 200,
+                    "message": None,
+                    "value": newdata
+                }
+                return jsonify(user_data), 200
+        else:
+            user_data = {
+                "error": True,
+                "status": 401,
+                "message": "Unauthorized"
+            }
+            return jsonify(user_data), 401
+    except Exception as e:
+        user_data = {
+            "error": True,
+            "status": 500,
+            "message": f"recieved error: {e}"
+        }
+        return jsonify(user_data), 500
+
+@app.route("/v2/keys/<database>/", methods=["POST", "GET", "DELETE"])
+def keysv2(database):
+    # HANDLE GET KEYS REQUEST
+    if request.method == "GET":
+        templist = []
+        token = request.headers.get("X-API-Key")
+        if token == mainpass: 
+            args = request.args.getlist("key[]")
+            for x in args:
+                templist.append(x)
+
+            newdata = nahcrofDB.getKeys(database, templist)
+
+            user_data = {}
+            for key in newdata:
+                user_data[key] = newdata[key]
+            return jsonify(user_data), 200
+        else:
+            user_data = {
+                "error": True,
+                "status": 401,
+                "message": "Unauthorized"
+            }
+            return jsonify(user_data), 401
+    # HANDLE MAKE KEY REQUEST
+    elif request.method == "POST":
+        token = request.headers.get("X-API-Key")
+        if token == mainpass:
+            data = request.get_json()
+            for key in data:
+                value = data[key]
+                print(key)
+                print(value)
+                pickle.dump({"data": {key: value}, "location": database}, open(f"{read_config.config['write_folder']}{key}_{database}_ferris", "wb"))
+                
+            return "", 204
+        else:
+            user_data = {
+                "error": True,
+                "status": 401,
+                "message": "Unauthorized"
+            }
+            return jsonify(user_data), 401
+    # HANDLE DELETE KEY REQUEST
+    elif request.method == "DELETE":
+        token = request.headers.get("X-API-Key")
+        if token != mainpass:
+            user_data = {
+                "error": True,
+                "status": 401,
+                "message": "Unauthorized"
+            }
+            return jsonify(user_data), 401
+        data = request.get_json()
+        for key in data:
+            nahcrofDB.delKey(database, key)
+        return "", 204
+    else:
+        user_response = {
+            "error": True,
+            "status": 500,
+            "message": "invalid request type"
+        }
+        return jsonify(user_response), 500
+
+@app.route("/v2/search/<database>/")
+def searchv2(database):
+    token = request.headers.get("X-API-Key")
+    if token != mainpass:
+        user_data = {
+            "error": True,
+            "status": 401,
+            "message": "Unauthorized"
+        }
+        return jsonify(user_data), 401
+
+    query = request.args.get("query")
+    value = nahcrofDB.search(database, query)
+    user_data = value
+    return jsonify(user_data), 200
 
 ferris_thread = threading.Thread(target=run_ferris)
 ferris_thread.start()
