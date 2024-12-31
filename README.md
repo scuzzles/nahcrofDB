@@ -97,4 +97,66 @@ OUTPUT:
 ['testkey']
 ```
 # HTTP Docs
-this section is a work in progress (sorry). We plan to have this finished within a month (that was a lie, I am going to rewrite the API and then release docs for v2, oops).
+## getting a key-value
+### GET /v2/key/:key/:database_folder
+HEADERS:
+```
+X-API-Key: api-token-here
+```
+RESPONSE 200 OK
+```json
+{
+    "error": false,
+    "message": null,
+    "status": 200,
+    "value": "value here"
+}
+```
+## getting multiple key-values
+### GET /v2/keys/:database_folder
+QUERY PARAMS
+```
+?key[]=key1&key[]=key2&key[]=key3
+```
+HEADERS:
+```
+X-API-Key: api-token-here
+```
+RESPONSE 200 OK
+```json
+{
+    "key1": "val1"
+    "key2": "val2"
+    "key3": "val3"
+    ...
+}
+```
+## Making key values
+### POST /v2/keys/:database_folder
+BODY (application/json)
+```json
+{
+    "key": "val1"
+    "key2": "val2"
+    ...
+}
+```
+RESPONSE 204 NO CONTENT
+## Searching your database
+### GET /v2/search/:database_folder
+QUERY PARAMS
+```
+?query=Hello%20World
+```
+HEADERS:
+```
+X-API-Key: api-token-here
+```
+RESPONSE 200 OK
+```json
+[
+    "key1",
+    "key2",
+    ...
+]
+```
