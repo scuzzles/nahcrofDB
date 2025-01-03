@@ -21,10 +21,6 @@ app.config["SECRET_KEY"] = "verysecret"
 def status():
     return "alive"
 
-@app.route("/file")
-def filething():
-    return render_template("test.html")
-
 # this page reverts the database to it's most recent backup, primarily handled at nahcrofDB.setToBackup
 @app.route("/to_backup/<database>")
 def revert_db(database):
