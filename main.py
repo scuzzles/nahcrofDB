@@ -18,10 +18,6 @@ def run_ferris():
 app = Flask(__name__)
 app.config["SECRET_KEY"] = "verysecret"
 
-@app.route("/file/<file>")
-def sendingfile(file):
-    return send_file(file)
-
 @app.route("/status")
 def status():
     return "alive"
