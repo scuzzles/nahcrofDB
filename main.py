@@ -458,11 +458,14 @@ def incrementkeyv2(database, value):
         current = data
         for key in newvalue[:-1]:
             current = current[key]
-        current[newvalue[-1]] += request.json["amount"]
+        try:
+            current[newvalue[-1]] += request.json["amount"]
+        except TypeError:
+            current[int(newvalue[-1])] += request.json["amount"]
 
-        pickle.dump({"data": {keyname: data}, "location": data["location"]}, open(f"{read_config.config['write_folder']}{key}_{data['location']}_ferris", "wb"))
+        pickle.dump({"data": {keyname: data}, "location": database}, open(f"{read_config.config['write_folder']}{key}_{database}_ferris", "wb"))
     else:
-        pickle.dump({"data": {keyname: data+request.json["amount"]}, "location": data["location"]}, open(f"{read_config.config['write_folder']}{key}_{data['location']}_ferris", "wb"))
+        pickle.dump({"data": {keyname: data+request.json["amount"]}, "location": database}, open(f"{read_config.config['write_folder']}{key}_{database}_ferris", "wb"))
 
     return "", 200
 
