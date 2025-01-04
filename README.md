@@ -96,6 +96,35 @@ OUTPUT:
 ```
 ['testkey']
 ```
+## Incrementing values
+In nahcrofDB, there is an incrementKey function. This allows you to increment a key, or a specific value within a key whilst only making one request to the database.
+Here is a simple example.
+```python
+client.makeKey("num", 5)
+client.incrementKey(10, "num")
+print(client.getKey("num"))
+```
+OUTPUT:
+```
+15
+```
+In this basic example, the key "num" was created and then incremented by 10. Here is a more complex example.
+```python
+client.makeKey("nums", {
+    "inner_values": [10, 23, 42, 8],
+    "type": "int",
+})
+client.incrementKey(2, "nums", "inner_values", 3)
+print(client.getKey("nums"))
+```
+OUTPUT
+```
+{
+    "inner_values": [10, 23, 42, 10],
+    "type": "int",
+}
+```
+This change is because nahcrofDB was told to increment a value by 2, the value was in the path nums["inner_values"][3] which was the 4th value in "inner_values", or 8.
 # HTTP Docs
 ## getting a key-value
 ### GET /v2/key/:key/:database_folder
@@ -160,3 +189,13 @@ RESPONSE 200 OK
     ...
 ]
 ```
+## Incrementing key values
+### POST /v2/increment/:database_folder/:path
+BODY (application/json)
+```json
+{
+    "amount": 1
+}
+```
+RESPONSE 204 NO CONTENT<br>
+example request url: /v2/increment/example_db/nums_list/num1
