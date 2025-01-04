@@ -457,7 +457,10 @@ def incrementkeyv2(database, value):
         print(newvalue)
         current = data
         for key in newvalue[:-1]:
-            current = current[key]
+            try:
+                current = current[key]
+            except TypeError:
+                current = current[int(key)]
         try:
             current[newvalue[-1]] += request.json["amount"]
         except TypeError:
