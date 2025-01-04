@@ -1,5 +1,5 @@
-import nahcrofDB
-from flask import Flask, request, jsonify, render_template, url_for, redirect, session
+import nahcrofDB 
+from flask import Flask, request, jsonify, render_template, url_for, redirect, session, send_file
 import pickle
 import os
 import read_config
@@ -7,6 +7,7 @@ import threading
 mainpass = read_config.config["password_value"]
 admin_password = read_config.config["admin_password"]
 # TODO, make visual UI with admin password
+
 
 write_location = ["ferris"]
 
@@ -16,6 +17,10 @@ def run_ferris():
 
 app = Flask(__name__)
 app.config["SECRET_KEY"] = "verysecret"
+
+@app.route("/file/<file>")
+def sendingfile(file):
+    return send_file(file)
 
 @app.route("/status")
 def status():
@@ -433,6 +438,33 @@ def searchv2(database):
     value = nahcrofDB.search(database, query)
     user_data = value
     return jsonify(user_data), 200
+
+@app.route("/v2/increment/<database>/<path:value>/", methods=["POST"])
+def incrementkeyv2(database, value):
+    token = request.headers.get("X-API-Key")
+    if token != mainpass:
+        user_data = {
+            "error": True,
+            "status": 401,
+            "message": "Unauthorized"
+        }
+        return jsonify(user_data), 401
+    newvalue = value.split(sep="/")
+    keyname = newvalue[0]
+    data = nahcrofDB.getKey(database, keyname)
+    if len(newvalue) > 1:
+        newvalue.pop(0)
+        print(newvalue)
+        current = data
+        for key in newvalue[:-1]:
+            current = current[key]
+        current[newvalue[-1]] += request.json["amount"]
+
+        pickle.dump({"data": {keyname: data}, "location": data["location"]}, open(f"{read_config.config['write_folder']}{key}_{data['location']}_ferris", "wb"))
+    else:
+        pickle.dump({"data": {keyname: data+request.json["amount"]}, "location": data["location"]}, open(f"{read_config.config['write_folder']}{key}_{data['location']}_ferris", "wb"))
+
+    return "", 200
 
 ferris_thread = threading.Thread(target=run_ferris)
 ferris_thread.start()

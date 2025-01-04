@@ -68,3 +68,12 @@ def delKey(key: str):
     payload = [key]
     headers = {'X-API-Key': DB_pass[0]}
     return requests.delete(url=f"{URL[0]}/v2/keys/{quote(DB_folder[0])}/", headers=headers, json=payload)
+
+def incrementKey(amount, *pathtokey):
+    payload = {"amount": amount}
+    headers = {'X-API-Key': DB_pass[0]}
+    templist = []
+    for value in pathtokey:
+        templist.append(f"{value}/")
+    finalpath = "".join(templist)
+    return requests.post(url=f"{URL[0]}/v2/increment/{quote(DB_folder[0])}/{finalpath}", headers=headers, json=payload)
