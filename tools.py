@@ -3,12 +3,30 @@ import os
 import nahcrofDB
 import pickle
 from read_config import config
+
+def console_color(text, color):
+    templist = []
+    if color == "red":
+        templist.append("\033[31m")
+    if color == "green":
+        templist.append("\033[92m")
+    if color == "cyan":
+        templist.append("\033[36m")
+    if color == "yellow":
+        templist.append("\033[33m")
+    if color == "purple":
+        templist.append("\033[35m")
+    templist.append(text)
+    templist.append("\033[0m")
+    print("".join(templist))
+
 default_path = config["default_path"]
 if __name__ == '__main__':
     args = sys.argv[1:]
     if args:
 
         if args[0] == "help":
+            console_color("Welcome to NahcrofDB", "cyan")
             print("HINT: location is in reference to the folder the database is in.")
             print("reset <location> - resets database for specified location (ONLY USE IF COMPLETELY NECESSARY)")
             print("check - check the health of all databases and what keynames they have")
@@ -26,20 +44,37 @@ if __name__ == '__main__':
 
         if args[0] == "reset":
             # VERY SCARY
-            user = args[1]
+            folder = args[1]
             print("")
-            print(f"this will reset the {user} database.") 
+            print(f"this will reset the {folder} database.") 
             print("are you sure you would like to do this")
             print("")
             danger = input("(y/n)")
             if danger == "y":
-                nahcrofDB.deleteDB(user)
-                nahcrofDB.emptyDB(user)
-                print("deleted")
+                nahcrofDB.deleteDB(folder)
+                nahcrofDB.emptyDB(folder)
+                console_color("Database reset", "red")
             elif danger == "n":
-                print("canceled deletion")
+                console_color("Canceled reset", "red")
             else:
-                print("invalid input, deletion canceled")
+                console_color("Invalid input, deletion canceled", "red")
+
+        if args[0] == "delete":
+            # VERY SCARY
+            folder = args[1]
+            print("")
+            console_color("WARNING", "red")
+            print(f"this will reset the {folder} database.") 
+            print("are you sure you would like to do this")
+            print("")
+            danger = input("(y/n)")
+            if danger == "y":
+                nahcrofDB.deleteDB(folder)
+                console_color("Deleted database", "red")
+            elif danger == "n":
+                console_color("Canceled deletion", "red")
+            else:
+                console_color("Invalid input, deletion canceled", "red")
 
         if args[0] == "check":
             accounts = os.listdir(default_path)
@@ -55,25 +90,24 @@ if __name__ == '__main__':
             print(data)
 
         if args[0] == "file1":
-            user = args[1]
-            data = pickle.load(open(f"{default_path}{user}/usr_f1.db", "rb"))
+            folder = args[1]
+            data = pickle.load(open(f"{default_path}{folder}/usr_f1.db", "rb"))
             print(data)
 
         if args[0] == "logs":
-            user = args[1]
-            data = pickle.load(open(f"{default_path}{user}/usr.logs", "rb"))
+            folder = args[1]
+            data = pickle.load(open(f"{default_path}{folder}/usr.logs", "rb"))
             # print(data)
             for x in data:
-                print(x)
+                console_color(x, "red")
 
         if args[0] == "view":
-            user = args[1]
-            reads = nahcrofDB.getReads(user)
-            writes = nahcrofDB.getWrites(user)
+            folder = args[1]
+            reads = nahcrofDB.getReads(folder)
+            writes = nahcrofDB.getWrites(folder)
             print(f"reads: {reads}")
             print(f"writes: {writes}")
-            print(f"database data: {account}")
-            print(f"database size: {nahcrofDB.sizeofDB(user)}")
+            print(f"database size: {nahcrofDB.sizeofDB(folder)}")
 
 
         if args[0] == "fix_structure": 
@@ -96,8 +130,7 @@ if __name__ == '__main__':
         if args[0] == "size":
             user = args[1]
             size = nahcrofDB.sizeofDB(user)
-            print(f"size: {size}")
-
+            console_color(f"size: {size}", "purple")
         
         if args[0] == "queue":
             print(len(os.listdir(config["write_folder"])))
@@ -125,9 +158,9 @@ if __name__ == '__main__':
             print(nahcrofDB.search(backup_loc, ""))
             print("")
             if data1 == data2:
-                print("database MATCHES the backup")
+                console_color("database MATCHES the backup", "purple")
             else:
-                print("datasets DO NOT match")
+                console_color("datasets DO NOT match", "red")
 
         if args[0] == "set_to_backup":
             user = args[1]
@@ -151,4 +184,4 @@ if __name__ == '__main__':
                 
 
     else:
-        print("you have to run a command, silly")
+        print("\033[31myou have to run a command, silly goose\033[0m") 
