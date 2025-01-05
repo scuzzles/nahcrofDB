@@ -136,17 +136,15 @@ def getKey(location, keyname):
             return getKey(location, keyname)
         st = retrieveStructure(location)
         partition = st["keys"][keyname]
-        try:
-            reads = st["system"]["reads"]
-            st["system"]["reads"] = reads + 1
-        except KeyError:
-            st["system"]["reads"] = 1
-        pickle.dump(st, open(f"{default_path}{location}/usr_st.db", "wb"))
         content = pickle.load(open(f"{default_path}{location}/usr_f{partition}.db", "rb"))[keyname]
     except KeyError:
         log(location, f"could not find key: {keyname}")
         content = "Key does not exist, DATABASE erroR"
     return content
+
+def pushKey(location, key, value):
+    # puts key in writes_folder to be made by ferris
+    pickle.dump({"data": {key: value}, "location": location}, open(f"{config['write_folder']}{key}_{location}_ferris", "wb"))
 
 def makeKey(location, keyname, keycontent):
     # check database size in mb

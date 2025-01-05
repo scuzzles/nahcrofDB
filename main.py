@@ -6,10 +6,6 @@ import read_config
 import threading
 mainpass = read_config.config["password_value"]
 admin_password = read_config.config["admin_password"]
-# TODO, make visual UI with admin password
-
-
-write_location = ["ferris"]
 
 # this function is ran at the end of a file in a seperate thread. Allows both ferris and main.py to run within one file
 def run_ferris():
@@ -31,9 +27,8 @@ def revert_db(database):
             keys = nahcrofDB.keysamount(database)
             size = nahcrofDB.sizeofDB(database)
             writes = nahcrofDB.getWrites(database)
-            reads = nahcrofDB.getReads(database)
             logs = nahcrofDB.getLogs(database)
-            return render_template("view_database.html", keys=keys, dbsize=size, writes=writes, reads=reads, logs=logs, database=database, message="database reverted")
+            return render_template("view_database.html", keys=keys, dbsize=size, writes=writes, logs=logs, database=database, message="database reverted")
         else:
             return "no cheating"
     else:
@@ -58,9 +53,8 @@ def backup_db(database):
             keys = nahcrofDB.keysamount(database)
             size = nahcrofDB.sizeofDB(database)
             writes = nahcrofDB.getWrites(database)
-            reads = nahcrofDB.getReads(database)
             logs = nahcrofDB.getLogs(database)
-            return render_template("view_database.html", keys=keys, dbsize=size, writes=writes, reads=reads, logs=logs, database=database, message="backup made/updated")
+            return render_template("view_database.html", keys=keys, dbsize=size, writes=writes, logs=logs, database=database, message="backup made/updated")
         else:
             return "no cheating"
     else:
@@ -85,7 +79,6 @@ def view_db(database):
             keys = nahcrofDB.keysamount(database)
             size = nahcrofDB.sizeofDB(database)
             writes = nahcrofDB.getWrites(database)
-            reads = nahcrofDB.getReads(database)
             logs = nahcrofDB.getLogs(database)
 
             # check exists
@@ -103,7 +96,7 @@ def view_db(database):
                 message = ""
 
 
-            return render_template("view_database.html", keys=keys, dbsize=size, writes=writes, reads=reads, logs=logs, database=database, message=message)
+            return render_template("view_database.html", keys=keys, dbsize=size, writes=writes, logs=logs, database=database, message=message)
         else:
             return "no cheating"
     else:
@@ -137,9 +130,8 @@ def dashboard():
                 all_folders = sorted(all_folders)
                 folders = {}
                 for folder in all_folders:
-                    reads = nahcrofDB.getReads(folder)
                     writes = nahcrofDB.getWrites(folder)
-                    folders[folder] = {"name": folder, "reads": reads, "writes": writes}
+                    folders[folder] = {"name": folder, "writes": writes}
                 return render_template("dashboard.html", folders=folders)
             except FileNotFoundError:
                 os.mkdir(read_config.config["default_path"])
@@ -148,9 +140,8 @@ def dashboard():
                 all_folders = sorted(all_folders)
                 folders = {}
                 for folder in all_folders:
-                    reads = nahcrofDB.getReads(folder)
                     writes = nahcrofDB.getWrites(folder)
-                    folders[folder] = {"name": folder, "reads": reads, "writes": writes}
+                    folders[folder] = {"name": folder, "writes": writes}
                 return render_template("dashboard.html", folders=folders)
         else:
             return "no cheating"
@@ -168,7 +159,7 @@ def writes(location, password):
 @app.route("/reads/<location>/<password>/")
 def reads(location, password):
     if password == mainpass:
-        data = nahcrofDB.getReads(location)
+        data = "This functionality is deprecated, sowwy :("
         return str(data), 200
     else:
         return "no", 403
