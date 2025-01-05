@@ -26,7 +26,7 @@ logs_per_database = 100
 
 # limit of database size in mb (set to "none" if you want no limit)
 TYPE: int/whole number (unless set to none)
-database_size_limit = 100
+database_size_limit = none
 
 # this is the folder where the write_maker or "ferris" will 
 # handle all writes
