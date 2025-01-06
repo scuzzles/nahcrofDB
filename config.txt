@@ -17,7 +17,7 @@ admin_password = good_password
 
 # size in mb of each database partition.
 # please note, database may slow down if value is set higher than one.
-TYPE: int/whole number
+TYPE: float number
 partition_size = 1
 
 # limit of how many logs each database will record (set to "none" if you want no limit)
