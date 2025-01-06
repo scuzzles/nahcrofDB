@@ -132,8 +132,11 @@ def getKey(location, keyname):
     try:
         current_writes = str(os.listdir(config["write_folder"]))
         if keyname in current_writes:
-            time.sleep(0.1)
-            return getKey(location, keyname)
+            try:
+                content = pickle.load(open(f"{config['write_folder']}{keyname}_{location}_ferris", "rb"))
+                return content["data"][keyname]
+            except FileNotFoundError:
+                return getKey(location, keyname)
         st = retrieveStructure(location)
         partition = st["keys"][keyname]
         content = pickle.load(open(f"{default_path}{location}/usr_f{partition}.db", "rb"))[keyname]
@@ -175,7 +178,7 @@ def makeKey(location, keyname, keycontent):
         if keyname not in st["keys"]:
             file_stats = os.stat(f"{default_path}{location}/usr_f{partitions}.db")
             mbs = file_stats.st_size / (1000 * 1000)
-            partition_size = int(config["partition_size"])
+            partition_size = float(config["partition_size"])
             if mbs > partition_size:
                 partitions = st["system"]["partitions"] + 1 
                 st["system"]["partitions"] = partitions
@@ -264,7 +267,7 @@ def remakeKey(location, keyname, keycontent):
         if keyname not in st["keys"]:
             file_stats = os.stat(f"{default_path}{location}/usr_f{partitions}.db")
             mbs = file_stats.st_size / (1000 * 1000)
-            partition_size = int(config["partition_size"])
+            partition_size = float(config["partition_size"])
             if mbs > partition_size:
                 partitions = st["system"]["partitions"] + 1 
                 st["system"]["partitions"] = partitions
@@ -317,11 +320,6 @@ def remakeKey(location, keyname, keycontent):
 
 def getKeys(location: str, keynames: list):
     tempdict = {}
-    for keyname in keynames:
-        current_writes = str(os.listdir(config["write_folder"]))
-        if keyname in current_writes:
-            time.sleep(0.1)
-            return getKeys(location, keynames)
     try:
         loaded_db = pickle.load(open(f"{default_path}{location}/usr_st.db", "rb"))
         for key in keynames:

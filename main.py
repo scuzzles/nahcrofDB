@@ -80,7 +80,7 @@ def view_db(database):
             size = nahcrofDB.sizeofDB(database)
             writes = nahcrofDB.getWrites(database)
             logs = nahcrofDB.getLogs(database)
-
+            total_writes = len(os.listdir(f"{read_config.config['write_folder']}"))
             # check exists
             default_path = read_config.config["default_path"]
             backup_exists = os.path.exists(f"{default_path}{database}_database_backup/usr_st.db")
@@ -96,7 +96,7 @@ def view_db(database):
                 message = ""
 
 
-            return render_template("view_database.html", keys=keys, dbsize=size, writes=writes, logs=logs, database=database, message=message)
+            return render_template("view_database.html", keys=keys, dbsize=size, writes=writes, logs=logs, database=database, message=message, writing=total_writes)
         else:
             return "no cheating"
     else:
