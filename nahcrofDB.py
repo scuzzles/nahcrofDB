@@ -93,6 +93,27 @@ def search(location, data):
                     templist.append(item)
             except KeyError:
                 log(location, f"SEARCH ERROR: trouble when checking values in ({item})")
+        writes_queue = os.listdir(config['write_folder'])
+        if writes_queue != []:
+            for write in writes_queue:
+                try:
+                    write_data = pickle.load(open(f"{config['write_folder']}{write}", "rb"))
+                    # in this context, write_location is the location (specific database) that the write is assigned to.
+                    write_location = write_data['location']
+                    if write_location == location:
+                        data = write_data["data"]
+                        for key in data:
+                            keyname = key
+                            keyvalue = data[key]
+                            if newdata in str(keyvalue):
+                                if keyname not in templist:
+                                    templist.append(keyname)
+                            else:
+                                if keyname in templist:
+                                    templist.pop(templist.index(keyname))
+
+                except FileNotFoundError:
+                    pass # assumes that the write has been written since the search query was made
         return templist
     except Exception as e:
         log(location, e)
@@ -131,7 +152,7 @@ def retrieveStructure(location):
 def getKey(location, keyname):
     try:
         current_writes = str(os.listdir(config["write_folder"]))
-        if keyname in current_writes:
+        if f"{keyname}_{location}_ferris" in current_writes:
             try:
                 content = pickle.load(open(f"{config['write_folder']}{keyname}_{location}_ferris", "rb"))
                 return content["data"][keyname]

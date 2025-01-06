@@ -46,7 +46,7 @@ if __name__ == '__main__':
             # VERY SCARY
             folder = args[1]
             print("")
-            print(f"this will reset the {folder} database.") 
+            print(f"this will reset the \"{folder}\" database.") 
             print("are you sure you would like to do this")
             print("")
             danger = input("(y/n)")
@@ -64,7 +64,7 @@ if __name__ == '__main__':
             folder = args[1]
             print("")
             console_color("WARNING", "red")
-            print(f"this will reset the {folder} database.") 
+            print(f"this will reset the \"{folder}\" database.") 
             print("are you sure you would like to do this")
             print("")
             danger = input("(y/n)")
