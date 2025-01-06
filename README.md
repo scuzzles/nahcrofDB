@@ -77,7 +77,7 @@ my value
 NOTE:
 if you attempt to use getKey and the key does not exist, the response will be as follows
 ```
-Key does not exist, DATABASE erroR
+{'error': True, 'message': 'Key (MISSING KEY) does not exist.', 'status': 404}
 ```
 To get multiple keys, you can use getKeys
 ```python
