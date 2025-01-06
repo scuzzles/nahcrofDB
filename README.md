@@ -1,5 +1,5 @@
 # Introduction
-nahcrofDB is an open source, key-value database, designed to be simple, fast, and scalable.
+nahcrofDB is an open source, key-value database, designed to be simple, fast, and scalable, even in large datasets.
 
 # Installation
 In order to install nahcrofDB, just run 
