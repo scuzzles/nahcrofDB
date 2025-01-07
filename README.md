@@ -23,6 +23,7 @@ python3 tools.py create_database DATABASE_NAME_HERE
 ```
 for more commands use the "help" command, here is the output for the help command
 ```
+Welcome to NahcrofDB
 HINT: location is in reference to the folder the database is in.
 reset <location> - resets database for specified location (ONLY USE IF COMPLETELY NECESSARY)
 check - check the health of all databases and what keynames they have
