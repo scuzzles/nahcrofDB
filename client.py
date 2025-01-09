@@ -31,11 +31,13 @@ def search(data: str) -> list[str]:
 
 def searchNames(data: str, where=None) -> list[str]: 
     # search database for keys containing specified data.
+    headers = {'X-API-Key': DB_pass[0]}
     if where == None:
+        # not sure why I decided to use a string with the value "null" but oh well.
         where = "null"
-    r = requests.get(url=f"{URL[0]}/search/{DB_pass[0]}/?location={quote(DB_folder[0])}&parameter={quote(data)}&where={quote(where)}")
+    r = requests.get(url=f"{URL[0]}/v2/searchnames/{quote(DB_folder[0])}/?query={quote(data)}&where={quote(where)}", headers=headers)
     response = r.json()
-    return response["data"]
+    return response
 
 def getKeys(*keys) -> dict:
     templist = []

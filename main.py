@@ -441,6 +441,23 @@ def searchv2(database):
     user_data = value
     return jsonify(user_data), 200
 
+@app.route("/v2/searchnames/<database>/")
+def searchnamesv2(database):
+    token = request.headers.get("X-API-Key")
+    if token != mainpass:
+        user_data = {
+            "error": True,
+            "status": 401,
+            "message": "Unauthorized"
+        }
+        return jsonify(user_data), 401
+    query = request.args.get("query")
+    where = request.args.get("where")
+    if where == "null":
+        where = None
+    user_data = nahcrofDB.searchNames(database, query, where)
+    return jsonify(user_data)
+
 @app.route("/v2/increment/<database>/<path:value>/", methods=["POST"])
 def incrementkeyv2(database, value):
     token = request.headers.get("X-API-Key")
