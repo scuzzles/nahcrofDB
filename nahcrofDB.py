@@ -1,8 +1,10 @@
 import sys
 import filecmp
 import time
+import mmap
 import os, shutil
 import pickle
+import random
 from read_config import config
 utf = "utf-8"
 # file_stats.st_size / (1024 * 1024)
@@ -93,7 +95,8 @@ def search(location, data):
                     templist.append(item)
             except KeyError:
                 log(location, f"SEARCH ERROR: trouble when checking values in ({item})")
-        writes_queue = os.listdir(config['write_folder'])
+        # the code below is commented out temporarily, it causes for imperformant searches, will be implemented again when a more efficient approach is found for searching queued write data.
+        """writes_queue = os.listdir(config['write_folder'])
         if writes_queue != []:
             for write in writes_queue:
                 try:
@@ -113,35 +116,64 @@ def search(location, data):
                                     templist.pop(templist.index(keyname))
 
                 except FileNotFoundError:
-                    pass # assumes that the write has been written since the search query was made
+                    pass # assumes that the write has been written since the search query was made"""
         return templist
     except Exception as e:
         log(location, e)
         return e
 
-# spef_search is specific search, it is designed to have less restrictive error handling and only be used for testing or to compare databases.
-def spef_search(location, data):
-    newdata = str(data).lower()
+def searchNames(location, query, where=None):
+    # "where" is where in the name will be searched. if where="end" then the db will search for keys ending with the query
+    # if where="start" then the db will search for keys starting with the query     
+    # if where=None then the db will search all keys where the keyname contains the query anywhere
     templist = []
-    tempdict = {}
-    st = pickle.load(open(f"{default_path}{location}/usr_st.db", "rb"))
-    partitions = st["system"]["partitions"]
-    for partition in range(partitions):
-        partition = int(partition) + 1
-        tempdict[str(partition)] = pickle.load(open(f"{default_path}{location}/usr_f{partition}.db", "rb"))
-    existing = st["keys"] 
-    for item in existing:
-        try:
-            checking = str(tempdict[str(st["keys"][item])][item])  
-            if newdata in checking:
-                templist.append(item)
-        except KeyError:
-            log(location, f"SEARCH ERROR: trouble when checking values in ({item})")
+    structured_query = str(query).lower()
+    st = retrieveStructure(location)
+    for key in st["keys"]:
+        searchkey = str(key).lower()
+        if where != None:
+            if where == "end":
+                if searchkey.endswith(structured_query):
+                    templist.append(key)
+            elif where == "start":
+                if searchkey.startswith(structured_query):
+                    templist.append(key)
+            else:
+                raise ValueError("Argument \"where\" must be \"end\" \"start\" or None")
+        else:
+            if structured_query in searchkey:
+                templist.append(key)
+
+    writes_queue = os.listdir(config['write_folder'])
+    if writes_queue != []:
+        for write in writes_queue:
+            if write.endswith(f"{location}_ferris"):
+                # {key}_{location}_ferris
+                keydata = write.split(sep="_")
+                keydata.pop(-1)
+                keydata.pop(-1)
+                keyname = "".join(keydata)
+
+                if keyname not in st["keys"]:
+                    searchkey = str(keyname).lower()
+                    if where != None:
+                        if where == "end":
+                            if searchkey.endswith(structured_query):
+                                templist.append(keyname)
+                        elif where == "start":
+                            if searchkey.startswith(structured_query):
+                                templist.append(keyname)
+                        else:
+                            raise ValueError("Argument \"where\" must be \"end\" \"start\" or None")
+                    else:
+                        if structured_query in searchkey:
+                            templist.append(keyname)
     return templist
 
-# gets the structure file, structure file is a file containing the partition in which each key exists.
-# the structure file also includes useful data like "writes" which is total writes to the database.
+
 def retrieveStructure(location):
+    # gets the structure file, structure file is a file containing the partition in which each key exists.
+    # the structure file also includes useful data like "writes" which is total writes to the database.
     try:
         st = pickle.load(open(f"{default_path}{location}/usr_st.db", "rb"))
         return st
@@ -168,7 +200,9 @@ def getKey(location, keyname):
 
 def pushKey(location, key, value):
     # puts key in writes_folder to be made by ferris
-    pickle.dump({"data": {key: value}, "location": location}, open(f"{config['write_folder']}{key}_{location}_ferris", "wb"))
+    random_value = random.randint(100, 100000000000)
+    pickle.dump({"data": {key: value}, "location": location}, open(f"{config['write_folder']}{key}_{location}_ferris{random_value}.tmp", "wb"))
+    os.replace(f"{config['write_folder']}{key}_{location}_ferris{random_value}.tmp", f"{config['write_folder']}{key}_{location}_ferris")
 
 def makeKey(location, keyname, keycontent):
     # check database size in mb

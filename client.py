@@ -29,6 +29,14 @@ def search(data: str) -> list[str]:
     response = r.json()
     return response["data"]
 
+def searchNames(data: str, where=None) -> list[str]: 
+    # search database for keys containing specified data.
+    if where == None:
+        where = "null"
+    r = requests.get(url=f"{URL[0]}/search/{DB_pass[0]}/?location={quote(DB_folder[0])}&parameter={quote(data)}&where={quote(where)}")
+    response = r.json()
+    return response["data"]
+
 def getKeys(*keys) -> dict:
     templist = []
     headers = {'X-API-Key': DB_pass[0]}

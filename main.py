@@ -199,6 +199,22 @@ def search(password):
     else:
         return "no", 403    
 
+@app.route("/searchNames/<password>/")
+def searchNamesAPI(password):
+    if password == mainpass:
+        location = request.args.get("location")
+        data = request.args.get("parameter")
+        where = request.args.get("where")
+        if where == "null":
+            where = None
+        results = nahcrofDB.searchNames(location, data, where)
+        user_data = {
+            "data": results
+        }
+        return jsonify(user_data), 200
+    else:
+        return "no", 403    
+
 @app.route("/getKeys/<password>/")
 def getKeys(password):
     if password == mainpass:
@@ -237,9 +253,8 @@ def makeKey(password):
         data = request.get_json()
         key = data["keyname"]
         value = data["keycontent"]
-        print(key)
-        print(value)
-        pickle.dump({"data": {key: value}, "location": data["location"]}, open(f"{read_config.config['write_folder']}{key}_{data['location']}_ferris", "wb"))
+        print("Old makeKey method")
+        nahcrofDB.pushKey(data["location"], key, value)
 
         return "successful", 201
     else:
@@ -378,7 +393,7 @@ def keysv2(database):
                 value = data[key]
                 print(key)
                 print(value)
-                pickle.dump({"data": {key: value}, "location": database}, open(f"{read_config.config['write_folder']}{key}_{database}_ferris", "wb"))
+                nahcrofDB.pushKey(database, key, value)
                 
             return "", 204
         else:
@@ -453,9 +468,9 @@ def incrementkeyv2(database, value):
         except TypeError:
             current[int(newvalue[-1])] += request.json["amount"]
 
-        pickle.dump({"data": {keyname: data}, "location": database}, open(f"{read_config.config['write_folder']}{key}_{database}_ferris", "wb"))
+        nahcrofDB.pushKey(database, keyname, data)
     else:
-        pickle.dump({"data": {keyname: data+request.json["amount"]}, "location": database}, open(f"{read_config.config['write_folder']}{key}_{database}_ferris", "wb"))
+        nahcrofDB.pushKey(database, keyname, data+request.json["amount"])
 
     return "", 200
 
