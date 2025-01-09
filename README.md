@@ -49,8 +49,9 @@ Running "main.py" will start both the HTTP handler and "ferris."
 In short, ferris handles queued write requests.
 # Using client.py
 client.py is the python api wrapper for nahcrofDB.
-To start, you will use the nahcrofDB.init function.
+To start, you will use the client.init function.
 ```python
+import client
 client.init("my_db_name", "url.com", "password_here")
 ```
 ## Making Keys
