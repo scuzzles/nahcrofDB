@@ -98,6 +98,28 @@ OUTPUT:
 ```
 ['testkey']
 ```
+To find keys containing data within keynames, you will use the .searchNames function
+```python
+client.searchNames("key")
+```
+OUTPUT:
+```
+['my_key', 'key', 'key2', testkey']
+```
+If you're looking for more precision in your search, change the "where" argument. Here's an example.
+```python
+client.searchNames("key", where="start")
+```
+OUTPUT:
+```
+['key', 'key2']
+```
+Valid values for "where" include the following
+```python
+"start", "end", None
+```
+these allow you to search the beginning of the key (where="start"), meaning that the key will only be included in the returned data if it's name starts with the query, the end of key (where="end"),
+anywhere within the key (None). If you do not specify where, it will be assumed that you are searching for all keys that contain the data somewhere within the name.
 ## Incrementing values
 In nahcrofDB, there is an incrementKey function. This allows you to increment a key, or a specific value within a key whilst only making one request to the database.
 Here is a simple example.
@@ -188,6 +210,23 @@ RESPONSE 200 OK
 [
     "key1",
     "key2",
+    ...
+]
+```
+### GET /v2/search/:database_folder
+QUERY PARAMS
+```
+?query=1?where=end
+```
+HEADERS:
+```
+X-API-Key: api-token-here
+```
+RESPONSE 200 OK
+```json
+[
+    "key1",
+    "test1",
     ...
 ]
 ```
