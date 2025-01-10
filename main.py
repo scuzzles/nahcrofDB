@@ -7,6 +7,8 @@ import threading
 mainpass = read_config.config["password_value"]
 admin_password = read_config.config["admin_password"]
 
+version = "2.5.0"
+
 # this function is ran at the end of a file in a seperate thread. Allows both ferris and main.py to run within one file
 def run_ferris():
     os.system("python3 ferris.py")
@@ -132,7 +134,7 @@ def dashboard():
                 for folder in all_folders:
                     writes = nahcrofDB.getWrites(folder)
                     folders[folder] = {"name": folder, "writes": writes}
-                return render_template("dashboard.html", folders=folders)
+                return render_template("dashboard.html", folders=folders, version=version)
             except FileNotFoundError:
                 os.mkdir(read_config.config["default_path"])
                 all_folders = os.listdir(read_config.config["default_path"])
@@ -142,7 +144,7 @@ def dashboard():
                 for folder in all_folders:
                     writes = nahcrofDB.getWrites(folder)
                     folders[folder] = {"name": folder, "writes": writes}
-                return render_template("dashboard.html", folders=folders)
+                return render_template("dashboard.html", folders=folders, version=version)
         else:
             return "no cheating"
     else:
