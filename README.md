@@ -52,7 +52,7 @@ client.py is the python api wrapper for nahcrofDB.
 To start, you will use the client.init function.
 ```python
 import client
-client.init("my_db_name", "url.com/", "api_password_here")
+client.init("my_db_name", "https://url.com/", "api_password_here")
 ```
 ## Making Keys
 To make one key, you can do this.
