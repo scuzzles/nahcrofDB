@@ -2,7 +2,7 @@
 TYPE: int/whole number
 port = 8080
 
-# This is the value of your password
+# This is your api_password
 TYPE: string
 password_value = realpassword1234
 
