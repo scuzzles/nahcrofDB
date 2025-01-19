@@ -594,8 +594,11 @@ def deleteDB(location):
 
 def convert_old_st(location):
     #try:
+        open(f"{default_path}{location}/st.db", "w")
         st_file = open(f"{default_path}{location}/st.db", "a")
         old_st = pickle.load(open(f"{default_path}{location}/usr_st.db", "rb"))["keys"]
+        partitions = pickle.load(open(f"{default_path}{location}/usr_st.db", "rb"))["system"]["partitions"]
+        pickle.dump(partitions, open(f"{default_path}{location}/partitions.db", "rb"))
         for key in old_st:
             value = old_st[key]
             json_data = {key: value}
