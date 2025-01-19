@@ -327,9 +327,9 @@ def getKey(password):
         print(location)
         keyname = request.args.get("keyname")
         if keyname in memory_queue:
-            data = memory_queue[key]
+            data = memory_queue[keyname]
             if data["location"] == location:
-                newdata = data["data"][key]
+                newdata = data["data"][keyname]
             else:
                 newdata = nahcrofDB.getKey(location, keyname)
         else:
