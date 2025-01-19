@@ -38,6 +38,12 @@ backup <location> - create a backup of an existing database
 check_backup <location> - compare a database to it's corresponding backup
 set_to_backup <location> - set the database to a pre-existing backup
 create_database <folder_name> - creates empty database within specified folder
+delete <location> - deletes database
+st_size <location> - view the size of the structure file
+partitions <location> - number of paritions
+convert_structure <location> - converts old structure format
+rebuild_all_structures - converts every structure file to new format
+kill_db - safely shuts down the database program, flushing queue
 ```
 ## Running the database
 In order to run nahcrofDB you will run the following command.
