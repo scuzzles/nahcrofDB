@@ -326,7 +326,7 @@ def getKey(password):
         location = request.args.get("location")
         print(location)
         keyname = request.args.get("keyname")
-        if key in memory_queue:
+        if keyname in memory_queue:
             data = memory_queue[key]
             if data["location"] == location:
                 newdata = data["data"][key]
