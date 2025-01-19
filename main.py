@@ -15,7 +15,7 @@ queue_method = read_config.config["queue_method"]
 default_path = read_config.config["default_path"]
 st_store_method = read_config.config["st_store_method"]
 
-version = "2.6.0"
+version = "2.6.2"
 
 memory_queue = {}
 
