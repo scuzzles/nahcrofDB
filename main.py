@@ -2,16 +2,38 @@ import nahcrofDB
 from flask import Flask, request, jsonify, render_template, url_for, redirect, session, send_file
 import pickle
 import os
+import time
 import read_config
+import sys
 import threading
+import ferris
+import json
+from typing import Any
 mainpass = read_config.config["password_value"]
 admin_password = read_config.config["admin_password"]
+queue_method = read_config.config["queue_method"]
+default_path = read_config.config["default_path"]
+st_store_method = read_config.config["st_store_method"]
 
-version = "2.5.0"
+version = "2.6.0"
+
+memory_queue = {}
+
+def memory_pushKey(location: str, key: str, value: Any):
+    memory_queue[key] = {"data": {key: value}, "location": location} 
+
+if st_store_method == "memory":
+    nahcrofDB.build_st()
+
+pid = os.getpid()
 
 # this function is ran at the end of a file in a seperate thread. Allows both ferris and main.py to run within one file
-def run_ferris():
-    os.system("python3 ferris.py")
+if queue_method == "file":
+    def run_ferris():
+        os.system("python3 ferris.py")
+if queue_method == "memory":
+    def run_ferris():
+        ferris.in_memory_queue(memory_queue)
 
 app = Flask(__name__)
 app.config["SECRET_KEY"] = "verysecret"
@@ -19,6 +41,48 @@ app.config["SECRET_KEY"] = "verysecret"
 @app.route("/status")
 def status():
     return "alive"
+
+@app.route("/kill_db/<password>/")
+def kill_db(password):
+    if password == mainpass:
+        write_values = {}
+        writes_list = list(memory_queue.keys())
+        for write in writes_list:
+            try:             
+                write_data = memory_queue[write]
+                location = write_data["location"] 
+                if location in write_values:
+                    for key in write_data["data"]:
+                        write_values[location][key] = write_data["data"][key]
+                else:
+                    write_values[location] = {}
+                    for key in write_data["data"]:
+                        write_values[location][key] = write_data["data"][key]
+                del memory_queue[write]
+            except Exception as e:
+                print(f"ERROR: {e}")
+                time.sleep(0.1)
+        for location in write_values:
+            nahcrofDB.makeKeys(location, write_values[location])
+        os.system(f"kill {pid}") 
+
+@app.route("/test/makekeys/<database>/<password>/<amount>")
+def test_makekey(database, password, amount):
+    data = {"time": 0, "keys made": 0, "speed": 0}
+    starttime = time.time()
+    for x in range(int(amount)):
+        try:
+            data["keys made"] += 1
+            memory_pushKey(database, f"testkey{x}", f"this is test value {x}")
+        except Exception as e:
+            break
+    endtime = time.time()
+    finaltime = endtime - starttime
+    data["time"] = finaltime
+    data["speed"] = data["keys made"]/data["time"]
+    # speed is keys/second
+    # time is time in seconds
+    return jsonify(data)
 
 # this page reverts the database to it's most recent backup, primarily handled at nahcrofDB.setToBackup
 @app.route("/to_backup/<database>")
@@ -78,11 +142,25 @@ def delete_DB(database):
 def view_db(database):
     if "password" in session:
         if session["password"] == admin_password:
+
+            start = time.time()
             keys = nahcrofDB.keysamount(database)
+            end = time.time()
+            print(f"keys time: {end-start}")
+
+            start = time.time()
             size = nahcrofDB.sizeofDB(database)
-            writes = nahcrofDB.getWrites(database)
+            end = time.time()
+            print(f"size time: {end-start}")
+
+            default_path = read_config.config["default_path"]
+            partitions = pickle.load(open(f"{default_path}{database}/partitions.db", "rb"))
+
             logs = nahcrofDB.getLogs(database)
-            total_writes = len(os.listdir(f"{read_config.config['write_folder']}"))
+            if queue_method == "file":
+                total_writes = len(os.listdir(f"{read_config.config['write_folder']}"))
+            if queue_method == "memory":
+                total_writes = len(memory_queue)
             # check exists
             default_path = read_config.config["default_path"]
             backup_exists = os.path.exists(f"{default_path}{database}_database_backup/usr_st.db")
@@ -98,7 +176,7 @@ def view_db(database):
                 message = ""
 
 
-            return render_template("view_database.html", keys=keys, dbsize=size, writes=writes, logs=logs, database=database, message=message, writing=total_writes)
+            return render_template("view_database.html", keys=keys, dbsize=size, writes=writes, logs=logs, database=database, message=message, writing=total_writes, partitions=partitions)
         else:
             return "no cheating"
     else:
@@ -193,7 +271,7 @@ def search(password):
     if password == mainpass:
         location = request.args.get("location")
         data = request.args.get("parameter")
-        results = nahcrofDB.search(location, data)
+        results = nahcrofDB.searchwithqueue(location, data, memory_queue)
         user_data = {
             "data": results
         }
@@ -209,7 +287,7 @@ def searchNamesAPI(password):
         where = request.args.get("where")
         if where == "null":
             where = None
-        results = nahcrofDB.searchNames(location, data, where)
+        results = nahcrofDB.searchNameswithqueue(location, data, where, queue=memory_queue)
         user_data = {
             "data": results
         }
@@ -224,11 +302,18 @@ def getKeys(password):
         templist = []
         keyname_amount = request.args.get("keynamenum")
         keynamenum = int(keyname_amount)
+        user_data = {}
         for n in range(keynamenum):
             key = request.args.get(f"key_{n}")
-            templist.append(key)
+            if key in memory_queue:
+                data = memory_queue[key]
+                if data["location"] == location:
+                    user_data[key] = data["data"][key]
+                else:
+                    templist.append(key)
+            else:
+                templist.append(key)
         newdata = nahcrofDB.getKeys(location, templist)
-        user_data = {}
         for key in newdata.keys():
             user_data[key] = newdata[key]
         return jsonify(user_data), 200
@@ -241,7 +326,14 @@ def getKey(password):
         location = request.args.get("location")
         print(location)
         keyname = request.args.get("keyname")
-        newdata = nahcrofDB.getKey(location, keyname)
+        if key in memory_queue:
+            data = memory_queue[key]
+            if data["location"] == location:
+                newdata = data["data"][key]
+            else:
+                newdata = nahcrofDB.getKey(location, keyname)
+        else:
+            newdata = nahcrofDB.getKey(location, keyname)
         user_data = {
             "keycontent": newdata
         }
@@ -256,7 +348,10 @@ def makeKey(password):
         key = data["keyname"]
         value = data["keycontent"]
         print("Old makeKey method")
-        nahcrofDB.pushKey(data["location"], key, value)
+        if queue_method == "memory":
+            memory_pushKey(data["location"], key, value)
+        else:
+            nahcrofDB.pushKey(data["location"], key, value)
 
         return "successful", 201
     else:
@@ -269,10 +364,13 @@ def makeKeys(password):
         data = request.get_json()
         location = data["location"]
         postdata = dict(data["data"])
-        for key, value in postdata.items():
-            pickle.dump({"data": {key: value}, "location": data["location"]}, open(f"{read_config.config['write_folder']}{key}_{data['location']}_ferris", "wb"))
+        if queue_method == "memory":
 
-
+            for key, value in postdata.items():
+                memory_pushKey(location, key, value)
+        else:
+            for key, value in postdata.items():
+                pickle.dump({"data": {key: value}, "location": data["location"]}, open(f"{read_config.config['write_folder']}{key}_{data['location']}_ferris", "wb"))
             print("successful")
         return "successful", 204
     else:
@@ -327,11 +425,18 @@ def deleteDB(password):
 
 @app.route("/v2/key/<key>/<db>")
 def keyv2(key, db):
-    try:
+    #try:
         token = request.headers.get("X-API-KEY")
         if token == mainpass:
             location = db
-            newdata = nahcrofDB.getKey(location, key)
+            if key in memory_queue:
+                data = memory_queue[key]
+                if data["location"] == location:
+                    newdata = data["data"][key]
+                else:
+                    newdata = nahcrofDB.getKey(location, key)
+            else:
+                newdata = nahcrofDB.getKey(location, key)
             if newdata == "Key does not exist, DATABASE erroR":
                 user_data = {
                     "error": True,
@@ -354,13 +459,13 @@ def keyv2(key, db):
                 "message": "Unauthorized"
             }
             return jsonify(user_data), 401
-    except Exception as e:
-        user_data = {
-            "error": True,
-            "status": 500,
-            "message": f"recieved error: {e}"
-        }
-        return jsonify(user_data), 500
+    #except Exception as e:
+    #    user_data = {
+    #        "error": True,
+    #        "status": 500,
+    #        "message": f"recieved error: {e}"
+    #    }
+    #    return jsonify(user_data), 500
 
 @app.route("/v2/keys/<database>/", methods=["POST", "GET", "DELETE"])
 def keysv2(database):
@@ -370,10 +475,22 @@ def keysv2(database):
         token = request.headers.get("X-API-Key")
         if token == mainpass: 
             args = request.args.getlist("key[]")
+            
+            tempdict = {}
             for x in args:
-                templist.append(x)
+                if x in memory_queue:
+                    data = memory_queue[x]
+                    if data["location"] == location:
+                        tempdict[x] = data["data"][x]
+                    else:
+                        templist.append(x)
+                else:
+                    templist.append(x)
+ 
 
             newdata = nahcrofDB.getKeys(database, templist)
+            for key, value in tempdict.items():
+                newdata[key] = value
 
             user_data = {}
             for key in newdata:
@@ -395,8 +512,12 @@ def keysv2(database):
                 value = data[key]
                 print(key)
                 print(value)
-                nahcrofDB.pushKey(database, key, value)
-                
+                if queue_method == "memory":
+                    for key, value in postdata.items():
+                        memory_pushKey(location, key, value)
+                else:
+                    for key, value in postdata.items():
+                        nahcrofDB.pushKey(database, key, value)
             return "", 204
         else:
             user_data = {
@@ -439,7 +560,7 @@ def searchv2(database):
         return jsonify(user_data), 401
 
     query = request.args.get("query")
-    value = nahcrofDB.search(database, query)
+    value = nahcrofDB.searchwithqueue(database, query, memory_queue)
     user_data = value
     return jsonify(user_data), 200
 
@@ -457,7 +578,7 @@ def searchnamesv2(database):
     where = request.args.get("where")
     if where == "null":
         where = None
-    user_data = nahcrofDB.searchNames(database, query, where)
+    user_data = nahcrofDB.searchNameswithqueue(database, query, where, queue=memory_queue)
     return jsonify(user_data)
 
 @app.route("/v2/increment/<database>/<path:value>/", methods=["POST"])

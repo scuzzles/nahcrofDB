@@ -2,7 +2,7 @@
 TYPE: int/whole number
 port = 8080
 
-# This is your api_password
+# This is the value of your password
 TYPE: string
 password_value = realpassword1234
 
@@ -19,6 +19,21 @@ admin_password = good_password
 # please note, database may slow down if value is set higher than one.
 TYPE: float number
 partition_size = 1
+
+# this is the method that will be used to queue writes for ferris.py to create.
+# "memory" = in-memory queue, "file" = file-based queue
+TYPE: string
+queue_method = memory
+
+# this is the limit of how many keys will be stored in the memory_queue (only applies if queue_method is memory)
+TYPE: int/whole number
+memory_queue_size_limit = 1000
+
+# this defines where the structure will be stored and indexed. If set to memory, the entire structure will be stored in memory,
+# this is the fastest option. If set to file, the file will be searched at every instance. In a future update there will be an option
+# for cache where only a certain portion will be stored in memory. for now use "memory" or "file"
+TYPE: string
+st_store_method = memory
 
 # limit of how many logs each database will record (set to "none" if you want no limit)
 TYPE: int/whole number (unless set to none)

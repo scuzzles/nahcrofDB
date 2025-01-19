@@ -23,6 +23,7 @@ def getKey(key: str) -> Any:
     except KeyError:
         return r
 
+
 def search(data: str) -> list[str]: 
     # search database for keys containing specified data.
     r = requests.get(url=f"{URL[0]}/search/{DB_pass[0]}/?location={quote(DB_folder[0])}&parameter={quote(data)}")
@@ -73,6 +74,16 @@ def makeKey(key: str, value: Any):
 def makeKeys(data: dict):
     headers = {'X-API-Key': DB_pass[0]}
     return requests.post(url=f"{URL[0]}/v2/keys/{quote(DB_folder[0])}/", headers=headers, json=data)
+
+def makekeys_test(amount: int) -> dict:
+    return requests.get(url=f"{URL[0]}/test/makekeys/{quote(DB_folder[0])}/{DB_pass[0]}/{amount}").json()
+
+def kill_db() -> None:
+    try:
+        requests.get(url=f"{URL[0]}/kill_db/{DB_pass[0]}/")
+    except Exception as e:
+        print("successfully stopped database program.")
+        print(f"response (Connection Error is success): {e}")
 
 def delKey(key: str):
     payload = [key]
