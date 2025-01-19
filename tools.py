@@ -1,6 +1,7 @@
 import sys
 import os
 import nahcrofDB
+import client
 import pickle
 from read_config import config
 
@@ -41,6 +42,26 @@ if __name__ == '__main__':
             print("check_backup <location> - compare a database to it's corresponding backup")
             print("set_to_backup <location> - set the database to a pre-existing backup")
             print("create_database <folder_name> - creates empty database within specified folder")
+            print("delete <location> - deletes database")
+            print("st_size <location> - view the size of the structure file")
+            print("partitions <location> - number of paritions")
+            print("convert_structure <location> - converts old structure format")
+            print("rebuild_all_structures - converts every structure file to new format")
+            print("kill_db - safely shuts down the database program, flushing queue")
+
+        if args[0] == "kill_db":
+            client.init("", f"http://0.0.0.0:{config['port']}/", config["password_value"])
+            client.kill_db()
+
+        if args[0] == "partitions":
+            folder = args[1]
+            console_color("database partitions", "purple")
+            print(pickle.load(open(f"{default_path}{folder}/partitions.db", "rb")))
+
+        if args[0] == "st_size":
+            folder = args[1]
+            console_color("database size:", "purple")
+            print(nahcrofDB.structuresize(folder))
 
         if args[0] == "reset":
             # VERY SCARY
@@ -86,8 +107,17 @@ if __name__ == '__main__':
 
         if args[0] == "structure":
             user = args[1]
-            data = pickle.load(open(f"{default_path}{user}/usr_st.db", "rb"))
+            data = open(f"{default_path}{user}/st.db", "r").read()
             print(data)
+
+        if args[0] == "rebuild_all_structures":
+            locations = os.listdir(default_path)
+            for location in locations:
+                nahcrofDB.convert_old_st(location)
+
+        if args[0] == "convert_structure":
+            location = args[1]
+            nahcrofDB.convert_old_st(location)
 
         if args[0] == "file1":
             folder = args[1]
@@ -103,11 +133,9 @@ if __name__ == '__main__':
 
         if args[0] == "view":
             folder = args[1]
-            reads = nahcrofDB.getReads(folder)
-            writes = nahcrofDB.getWrites(folder)
-            print(f"reads: {reads}")
-            print(f"writes: {writes}")
+            partitions = pickle.load(open(f"{default_path}{folder}/partitions.db", "rb"))
             print(f"database size: {nahcrofDB.sizeofDB(folder)}")
+            print(f"partitions: {partitions}")
 
 
         if args[0] == "fix_structure": 
