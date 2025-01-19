@@ -247,6 +247,6 @@ BODY (application/json)
 RESPONSE 204 NO CONTENT<br>
 example request url: /v2/increment/example_db/nums_list/num1
 # Projects using nahcrofDB
-[CrofAI](https://ai.nahcrof.com/) - Fast AI hosting service
-[Rise-game](https://rise-game.com/) - text-based, online, browser RPG game
-[Strife](https://strife.nahcrof.com/) - basic chat app
+- [CrofAI](https://ai.nahcrof.com/) - Fast AI hosting service
+- [Rise-game](https://rise-game.com/) - text-based, online, browser RPG game
+- [Strife](https://strife.nahcrof.com/) - basic chat app
