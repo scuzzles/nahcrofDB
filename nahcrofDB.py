@@ -598,7 +598,7 @@ def convert_old_st(location):
         st_file = open(f"{default_path}{location}/st.db", "a")
         old_st = pickle.load(open(f"{default_path}{location}/usr_st.db", "rb"))["keys"]
         partitions = pickle.load(open(f"{default_path}{location}/usr_st.db", "rb"))["system"]["partitions"]
-        pickle.dump(partitions, open(f"{default_path}{location}/partitions.db", "rb"))
+        pickle.dump(partitions, open(f"{default_path}{location}/partitions.db", "wb"))
         for key in old_st:
             value = old_st[key]
             json_data = {key: value}
