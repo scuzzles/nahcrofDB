@@ -513,10 +513,10 @@ def keysv2(database):
                 print(key)
                 print(value)
                 if queue_method == "memory":
-                    for key, value in postdata.items():
-                        memory_pushKey(location, key, value)
+                    for key, value in data.items():
+                        memory_pushKey(database, key, value)
                 else:
-                    for key, value in postdata.items():
+                    for key, value in data.items():
                         nahcrofDB.pushKey(database, key, value)
             return "", 204
         else:
