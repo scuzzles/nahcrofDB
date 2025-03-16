@@ -198,7 +198,6 @@ def home():
             if session["password"] == admin_password:
                 return redirect("/dashboard")
             else:
-                session.clear()
                 return "how?"
 
 @app.route("/dashboard")
@@ -481,7 +480,7 @@ def keysv2(database):
             for x in args:
                 if x in memory_queue:
                     data = memory_queue[x]
-                    if data["location"] == database:
+                    if data["location"] == location:
                         tempdict[x] = data["data"][x]
                     else:
                         templist.append(x)
