@@ -89,7 +89,15 @@ if you attempt to use getKey and the key does not exist, the response will be as
 ```
 To get multiple keys, you can use getKeys
 ```python
-keys = client.getKeys(["key", "key2"])
+keys = client.getKeys("key", "key2")
+```
+OUTPUT:
+```
+{'key': 'value', 'key2': 'value'}
+```
+You can also use getKeysList which allows the user to get multiple keys using a list of keys instead of extra parameters.
+```python
+keys = client.getKeysList(["key", "key2"])
 ```
 OUTPUT:
 ```
