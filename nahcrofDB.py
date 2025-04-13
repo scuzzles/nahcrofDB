@@ -270,24 +270,26 @@ def searchNameswithqueue(location, query, where=None, queue=None):
             tempdict = {k: "" for k in structure_data[location] if str(k).lower().startswith(structured_query)}
         if where == "end":
             tempdict = {k: "" for k in structure_data[location] if str(k).lower().endswith(structured_query)}
+            print(location)
         if where == None:
             tempdict = {k: "" for k in structure_data[location] if structured_query in str(k).lower()}
     if queue:
         for key in queue:
-            if key not in tempdict:
-                searchkey = str(key).lower()
-                if where != None:
-                    if where == "end":
-                        if searchkey.endswith(structured_query):
-                            tempdict[key] = ""
-                    elif where == "start":
-                        if searchkey.startswith(structured_query):
-                            tempdict[key] = ""
+            if queue[key]["location"] == location:
+                if key not in tempdict:
+                    searchkey = str(key).lower()
+                    if where != None:
+                        if where == "end":
+                            if searchkey.endswith(structured_query):
+                                tempdict[key] = ""
+                        elif where == "start":
+                            if searchkey.startswith(structured_query):
+                                tempdict[key] = ""
+                        else:
+                            raise ValueError("Argument \"where\" must be \"end\" \"start\" or None")
                     else:
-                        raise ValueError("Argument \"where\" must be \"end\" \"start\" or None")
-                else:
-                    if structured_query in searchkey:
-                        tempdict[key] = ""
+                        if structured_query in searchkey:
+                            tempdict[key] = ""
 
     if st_type[0] == "file":
         with open(f"{default_path}{location}/st.db") as st:
@@ -628,4 +630,3 @@ def setToBackup(location):
         return "failed"
     deleteDB(location)
     os.system(f"cp -r {default_path}{location}_database_backup/. {default_path}{location}")
-
