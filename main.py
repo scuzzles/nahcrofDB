@@ -15,7 +15,7 @@ queue_method = read_config.config["queue_method"]
 default_path = read_config.config["default_path"]
 st_store_method = read_config.config["st_store_method"]
 
-version = "2.6.2"
+version = "2.7"
 
 memory_queue = {}
 
@@ -149,7 +149,7 @@ def view_db(database):
             print(f"keys time: {end-start}")
 
             start = time.time()
-            size = nahcrofDB.sizeofDB(database)
+            size = round(nahcrofDB.sizeofDB(database), 3)
             end = time.time()
             print(f"size time: {end-start}")
 
