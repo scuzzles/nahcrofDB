@@ -10,6 +10,10 @@ After installing, make sure that you have the required packages installed, the c
 ```
 pip install flask requests
 ```
+(NOTE: if you are just looking for the client and you work internally with nahcrof tools, you can run this command for the nahcrofDB api wrapper)
+```
+epm -i nahcrofDB
+```
 Make sure to look through the config.txt file and update everything.
 "admin_password" is the password to acces the UI.
 "password_value" is the password used when accessing the database api.
